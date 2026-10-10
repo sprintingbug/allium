@@ -1,0 +1,1676 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Allium Tagaytay</title>
+<meta name="description" content="Allium Tagaytay — hotel room reservation system">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ridge-hotel brochure up front (photo hero, room cards, deck story), a calm operations console behind the Staff door. */
+:root{
+  --bg:#F2F4F0; --surface:#FFFFFF; --sunk:#E8ECE6; --ink:#17221E; --muted:#5B6862; --line:#D6DDD7;
+  --pine:#1E3B31; --pine-2:#2C5546; --gold:#A9853F; --gold-ink:#7A5E26; --gold-soft:#EFE5CC;
+  --primary:var(--pine); --on-primary:#F4F1E6;
+  --ok:#2D7A57; --ok-bg:#DDEFE5; --info:#2F6390; --info-bg:#DDE8F3; --warn:#9A6A12; --warn-bg:#F4E8CC; --bad:#A8423A; --bad-bg:#F5DEDB;
+  --ph1:#C9D3C8; --ph2:#93A595; --shadow:0 18px 40px -22px rgba(20,40,32,.35);
+  --f-display:"Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --f-body:"Jost", "Futura", "Avenir Next", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:10px; --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1613; --surface:#14201C; --sunk:#101B17; --ink:#E9EDE7; --muted:#97A59E; --line:#26362F;
+  --pine:#3C6B5A; --pine-2:#4E8270; --gold:#D2B26B; --gold-ink:#E2C789; --gold-soft:#2A2618;
+  --primary:#D2B26B; --on-primary:#15201B;
+  --ok:#6CC59A; --ok-bg:#16301F; --info:#86B5E0; --info-bg:#152636; --warn:#E3B661; --warn-bg:#30260F; --bad:#E88B80; --bad-bg:#3A1C19;
+  --ph1:#22332C; --ph2:#33493F; --shadow:0 18px 40px -22px rgba(0,0,0,.7); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0D1613; --surface:#14201C; --sunk:#101B17; --ink:#E9EDE7; --muted:#97A59E; --line:#26362F;
+  --pine:#3C6B5A; --pine-2:#4E8270; --gold:#D2B26B; --gold-ink:#E2C789; --gold-soft:#2A2618;
+  --primary:#D2B26B; --on-primary:#15201B;
+  --ok:#6CC59A; --ok-bg:#16301F; --info:#86B5E0; --info-bg:#152636; --warn:#E3B661; --warn-bg:#30260F; --bad:#E88B80; --bad-bg:#3A1C19;
+  --ph1:#22332C; --ph2:#33493F; --shadow:0 18px 40px -22px rgba(0,0,0,.7); color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:.005em}
+h1{font-size:clamp(2.6rem,6vw,4.6rem)} h2{font-size:clamp(1.9rem,3.6vw,2.7rem)} h3{font-size:1.55rem} h4{font-size:1.2rem}
+p{margin:0}
+a{color:inherit}
+.wrap{width:min(1180px,100%);margin-inline:auto;padding-inline:20px}
+.eyebrow{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-ink);font-weight:500}
+.muted{color:var(--muted)} .mono{font-family:var(--f-mono);font-size:.88em}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+/* Buttons & fields */
+.btn{appearance:none;border:1px solid transparent;border-radius:999px;padding:.62rem 1.2rem;font:500 .92rem/1.2 var(--f-body);cursor:pointer;display:inline-flex;align-items:center;gap:.45rem;transition:transform .18s var(--ease),background .2s,border-color .2s,color .2s;white-space:nowrap;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--primary);color:var(--on-primary)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--gold)}
+.btn-gold{background:var(--gold);color:#17221E}
+.btn-danger{background:transparent;border-color:var(--bad);color:var(--bad)}
+.btn-danger:hover{background:var(--bad-bg)}
+.btn-sm{padding:.4rem .8rem;font-size:.82rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:.3rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;min-width:0}
+.field input,.field select,.field textarea{font:400 .98rem var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.6rem .75rem;width:100%;transition:border-color .2s}
+.field textarea{min-height:76px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 22%,transparent)}
+.row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.err{color:var(--bad);font-size:.88rem;min-height:1.2em}
+
+/* Loader */
+.ld{position:fixed;inset:0;z-index:100;background:#0F1D18;display:grid;place-items:center;transition:opacity .7s var(--ease),visibility .7s}
+.ld.done{opacity:0;visibility:hidden}
+.ld-in{display:flex;flex-direction:column;align-items:center;gap:14px;color:#EFE6CC}
+.ld .wm-big{font-family:var(--f-display);font-size:2.6rem;letter-spacing:.42em;margin-right:-.42em;font-weight:500;display:flex}
+.ld .wm-big span{opacity:0;transform:translateY(8px);animation:rise .7s var(--ease) forwards;animation-delay:calc(.9s + var(--i)*.08s)}
+.ld small{letter-spacing:.38em;font-size:.72rem;color:#B8A06A;opacity:0;animation:fade .8s 1.5s forwards}
+.ld-bar{width:180px;height:1px;background:rgba(239,230,204,.15);overflow:hidden;margin-top:10px}
+.ld-bar i{display:block;height:100%;background:linear-gradient(90deg,#8E6B2A,#F1DDA0,#8E6B2A);width:100%;transform:translateX(-100%);animation:load 1.8s var(--ease) forwards}
+.ld .logo [pathLength]{stroke-dasharray:100;stroke-dashoffset:100;animation:draw 1.3s var(--ease) forwards}
+.ld .logo .stem{animation-delay:.1s}.ld .logo .leaf{animation-delay:.35s}
+.ld .logo .fl{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:pop .45s var(--ease) forwards;animation-delay:calc(.6s + var(--d,0)*.035s)}
+@keyframes draw{to{stroke-dashoffset:0}} @keyframes pop{to{transform:scale(1)}}
+@keyframes load{to{transform:translateX(0)}} @keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes zoom{from{transform:scale(1.09)}to{transform:scale(1)}}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:18px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.wm{display:flex;flex-direction:column;line-height:1}
+.wm b{font-family:var(--f-display);font-weight:600;font-size:1.45rem;letter-spacing:.3em}
+.wm small{font-size:.58rem;letter-spacing:.42em;color:var(--gold-ink);margin-top:3px}
+.nav{display:flex;gap:4px;margin-left:auto}
+.nav a{text-decoration:none;padding:.45rem .8rem;border-radius:999px;font-size:.92rem;color:var(--muted);transition:color .2s,background .2s}
+.nav a:hover{color:var(--ink)} .nav a.on{color:var(--ink);background:var(--sunk)}
+.acct{display:flex;gap:8px;align-items:center}
+.burger{display:none;background:none;border:1px solid var(--line);border-radius:8px;width:40px;height:40px;cursor:pointer;color:var(--ink)}
+@media (max-width:880px){
+  .burger{display:grid;place-items:center;margin-left:auto}
+  .nav{position:absolute;top:68px;left:0;right:0;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 20px 16px;margin:0;display:none}
+  .nav.open{display:flex;animation:viewIn .3s var(--ease)}
+  .acct .who{display:none}
+}
+
+main{min-height:70vh}
+.view{animation:viewIn .55s var(--ease)}
+.stagger>*{animation:rise .7s var(--ease) both;animation-delay:calc(var(--i,0)*80ms)}
+section{padding-block:64px}
+
+/* Photo frames (gradient shows if a photo can't load) */
+.ph{position:relative;overflow:hidden;background:radial-gradient(120% 90% at 20% 10%,var(--ph1),var(--ph2));border-radius:var(--r);max-width:100%}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+.ph::before{content:"";position:absolute;inset:auto 14px 12px auto;width:22px;height:22px;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-radius:50%}
+
+/* Hero */
+.hero{position:relative;padding:0;display:flex;align-items:flex-end;overflow:hidden;color:#F4F1E6}
+.hero .hero-ph{position:absolute;inset:-6% 0 0 0;border-radius:0;will-change:transform}
+.hero .hero-ph::before{display:none}
+.hero .hero-ph img{animation:zoom 14s ease-out both}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,18,.35) 0%,rgba(10,22,18,.15) 35%,rgba(10,22,18,.85) 100%)}
+.hero-copy{position:relative;width:100%;padding-block:0 120px}
+.hero-copy .eyebrow{color:#E6CF95}
+.hero-copy h1{max-width:13ch;margin:.5rem 0 .8rem}
+.hero-copy p{max-width:52ch;color:#E2E6DF;font-size:1.05rem}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn-glass{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);color:#F4F1E6;backdrop-filter:blur(6px)}
+.btn-glass:hover{background:rgba(255,255,255,.22)}
+.cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);background:none;border:none;color:#EFE6CC;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;font:500 .7rem var(--f-body);letter-spacing:.3em;text-transform:uppercase}
+.cue i{width:1px;height:42px;background:linear-gradient(#EFE6CC,transparent);position:relative;overflow:hidden}
+.cue i::after{content:"";position:absolute;left:-2px;top:0;width:5px;height:10px;border-radius:3px;background:#E6CF95;animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%{transform:translateY(-10px);opacity:0}30%{opacity:1}100%{transform:translateY(44px);opacity:0}}
+
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.sec-head p{max-width:52ch}
+
+/* Room type cards */
+.types{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s var(--ease),box-shadow .35s}
+.tcard:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.tcard:hover .ph img{transform:scale(1.05)}
+.tcard .ph{aspect-ratio:4/3;border-radius:0}
+.tcard-b{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.tcard-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.rate{font-family:var(--f-display);font-size:1.6rem;font-weight:600;white-space:nowrap}
+.rate small{font-family:var(--f-body);font-size:.78rem;color:var(--muted);font-weight:400}
+.specs{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.86rem;color:var(--muted)}
+.tcard-f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:6px;flex-wrap:wrap}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:500;letter-spacing:.04em;padding:.22rem .6rem;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-available,.p-checked-in{color:var(--ok);background:var(--ok-bg)}
+.p-reserved,.p-confirmed{color:var(--info);background:var(--info-bg)}
+.p-occupied{color:var(--warn);background:var(--warn-bg)}
+.p-maintenance,.p-cancelled{color:var(--bad);background:var(--bad-bg)}
+.p-checked-out{color:var(--muted);background:var(--sunk)}
+
+/* Deck band */
+.band{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+.band .ph{aspect-ratio:16/11}
+@media (max-width:820px){.band{grid-template-columns:1fr}}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 26px;margin-top:22px}
+.facts div{border-top:1px solid var(--line);padding-top:10px}
+.facts b{display:block;font-family:var(--f-display);font-size:1.5rem;font-weight:600}
+.facts span{font-size:.86rem;color:var(--muted)}
+
+.amen{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.amen div{background:var(--surface);padding:20px}
+.amen h4{margin-bottom:4px}
+.amen p{font-size:.9rem;color:var(--muted)}
+
+footer{border-top:1px solid var(--line);padding-block:36px;margin-top:40px;font-size:.88rem;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+
+/* Rooms page */
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:end}
+@media (max-width:860px){.filters{grid-template-columns:1fr 1fr}}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:.42rem .85rem;font:500 .85rem var(--f-body);cursor:pointer;transition:all .2s}
+.seg button.on{background:var(--pine);border-color:var(--pine);color:#F4F1E6}
+.heat{margin-top:22px;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.heat table{border-collapse:collapse;width:100%;min-width:720px;font-size:.82rem}
+.heat th,.heat td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line)}
+.heat th:first-child,.heat td:first-child{text-align:left;padding-left:14px;white-space:nowrap}
+.heat tr:last-child td{border-bottom:none}
+.hc{display:inline-grid;place-items:center;width:30px;height:26px;border-radius:6px;font-variant-numeric:tabular-nums;font-weight:500}
+.hc.h0{background:var(--bad-bg);color:var(--bad)} .hc.h1{background:var(--warn-bg);color:var(--warn)} .hc.h2{background:var(--ok-bg);color:var(--ok)}
+.heat .wk{color:var(--muted);font-weight:400;font-size:.72rem;display:block}
+.results{display:grid;gap:22px;margin-top:26px}
+.rcard{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0)*90ms)}
+.rcard .ph{border-radius:0;min-height:240px}
+.rcard-b{padding:20px 22px;display:flex;flex-direction:column;gap:12px;min-width:0}
+@media (max-width:760px){.rcard{grid-template-columns:1fr}.rcard .ph{aspect-ratio:16/10;min-height:0}}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 .8rem var(--f-mono);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:.32rem .55rem;cursor:pointer;transition:all .2s}
+.chip:hover:not([disabled]){border-color:var(--gold)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#17221E}
+.chip[disabled]{opacity:.38;text-decoration:line-through;cursor:not-allowed}
+
+/* Deck page */
+.deck-hero .ph{aspect-ratio:21/9;min-height:300px}
+.gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:28px}
+.gallery figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.gallery figure .ph{aspect-ratio:4/3}
+.gallery figure:nth-child(1){grid-column:span 4}.gallery figure:nth-child(1) .ph{aspect-ratio:16/9}
+.gallery figure:nth-child(2){grid-column:span 2}.gallery figure:nth-child(2) .ph{aspect-ratio:auto;flex:1;min-height:200px}
+.gallery figure:nth-child(n+3){grid-column:span 2}
+.gallery figcaption{font-size:.84rem;color:var(--muted)}
+@media (max-width:760px){.gallery{grid-template-columns:1fr}.gallery figure{grid-column:auto!important}}
+.sched{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:22px}
+.sched div{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface)}
+.sched b{font-family:var(--f-mono);font-size:.86rem;color:var(--gold-ink)}
+
+/* Panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.empty{text-align:center;padding:48px 20px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.bk-list{display:grid;gap:14px}
+.bitem{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;animation:rise .55s var(--ease) both;animation-delay:calc(var(--i,0)*70ms)}
+.bitem .ph{aspect-ratio:1;width:120px}
+.bitem-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+@media (max-width:720px){.bitem{grid-template-columns:72px minmax(0,1fr)}.bitem .ph{width:72px}.bitem-acts{grid-column:1/-1;justify-content:flex-start}}
+
+/* Modal */
+.mb{position:fixed;inset:0;z-index:60;background:rgba(8,16,13,.55);backdrop-filter:blur(3px);display:grid;place-items:center;padding:18px;animation:fade .25s forwards;opacity:0;overflow-y:auto}
+.md{background:var(--bg);border:1px solid var(--line);border-radius:16px;width:min(560px,100%);max-height:calc(100vh - 36px);overflow:auto;box-shadow:0 30px 80px -30px rgba(0,0,0,.6);animation:pop2 .38s var(--ease)}
+.md.wide{width:min(980px,100%)}
+@keyframes pop2{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.md-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:2}
+.md-b{padding:22px;display:flex;flex-direction:column;gap:16px}
+.x{background:none;border:1px solid var(--line);border-radius:50%;width:34px;height:34px;cursor:pointer;color:var(--ink);font-size:1.1rem;flex:none}
+.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px;overflow-x:auto}
+.tabs button{flex:1;border:none;background:none;padding:.5rem .9rem;border-radius:999px;font:500 .88rem var(--f-body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.hint{font-size:.85rem;background:var(--gold-soft);color:var(--ink);border-radius:8px;padding:10px 12px}
+
+/* Booking */
+.steps{display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem}
+.steps span{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.steps i{font-style:normal;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:.72rem}
+.steps .on{color:var(--ink)} .steps .on i{background:var(--gold);border-color:var(--gold);color:#17221E}
+.steps .done i{background:var(--pine);border-color:var(--pine);color:#F4F1E6}
+.bk-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px}
+@media (max-width:760px){.bk-grid{grid-template-columns:1fr}}
+.bk-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.quote{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;align-self:start}
+.quote .ph{aspect-ratio:16/9}
+.ql{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}
+.ql.tot{border-top:1px solid var(--line);padding-top:10px;font-weight:600;font-size:1rem}
+.bk-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+.pm{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.pm label{border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:var(--surface);transition:border-color .2s}
+.pm label:has(input:checked){border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent)}
+.pm input{position:absolute;opacity:0;pointer-events:none}
+.pm b{font-weight:500}.pm small{color:var(--muted);font-size:.78rem}
+
+/* Receipt */
+.rcpt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.rcpt-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px dashed var(--line);padding-bottom:14px;flex-wrap:wrap}
+.rcpt-ref{font-family:var(--f-mono);font-size:1.15rem;letter-spacing:.06em;color:var(--gold-ink)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 18px}
+.kv div span{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lines{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:12px}
+
+/* Admin */
+.adm-head{display:flex;justify-content:space-between;gap:16px;align-items:end;flex-wrap:wrap;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi span{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-family:var(--f-display);font-size:2rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi small{color:var(--muted);font-size:.8rem}
+.board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}
+@media (max-width:900px){.board{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:4px;min-width:0;border-top:3px solid var(--line);transition:transform .2s var(--ease)}
+.tile:hover{transform:translateY(-2px)}
+.tile b{font-family:var(--f-mono);font-size:.9rem;font-weight:500}
+.tile small{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-available{border-top-color:var(--ok)} .t-reserved{border-top-color:var(--info)} .t-occupied{border-top-color:var(--warn)} .t-maintenance{border-top-color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+@media (max-width:820px){.cols2{grid-template-columns:1fr}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table.t{border-collapse:collapse;width:100%;font-size:.88rem;min-width:640px}
+table.t th{text-align:left;font-weight:500;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:11px 12px;border-bottom:1px solid var(--line);background:var(--sunk);white-space:nowrap}
+table.t td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.t tr:last-child td{border-bottom:none}
+table.t td.r,table.t th.r{text-align:right;font-variant-numeric:tabular-nums}
+.list{display:flex;flex-direction:column}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:none}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.toolbar .field{flex:1;min-width:160px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .bar{fill:var(--pine-2)} .chart .bar.today{fill:var(--gold)} .chart .grid{stroke:var(--line)} .chart text{fill:var(--muted);font:11px var(--f-body)}
+.chart .bar.future{fill:color-mix(in srgb,var(--pine-2) 45%,var(--surface))}
+
+/* Toast */
+.toasts{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(440px,calc(100% - 32px))}
+.toast{background:var(--ink);color:var(--bg);padding:.7rem 1.1rem;border-radius:999px;font-size:.9rem;box-shadow:var(--shadow);animation:rise .35s var(--ease);text-align:center}
+.toast.bad{background:var(--bad);color:#fff}
+
+
+/* Chapters: each feature gets its own screen */
+.chap{min-height:calc(100svh - 68px);display:flex;align-items:center;padding-block:80px;position:relative;scroll-margin-top:68px}
+.center{text-align:center}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center}
+.split.rev>.ph{order:-1}
+.split-copy{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ph.tall{aspect-ratio:4/5;width:100%}
+@media (max-width:820px){.split{grid-template-columns:1fr;gap:28px}.ph.tall{aspect-ratio:4/3}.split.rev>.ph{order:0}}
+.search-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow);margin-top:8px}
+.tonight{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+.tonight div{border-top:1px solid var(--line);padding-top:8px}
+.tonight b{display:block;font-family:var(--f-display);font-size:2rem;font-weight:600;line-height:1}
+.tonight span{font-size:.8rem;color:var(--muted)}
+.intro-chap{background:var(--sunk)}
+.type-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}
+.type-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:0;overflow:hidden;cursor:pointer;color:var(--ink);font:inherit;text-align:left;transition:transform .35s var(--ease),box-shadow .35s}
+.type-tabs button:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.type-tabs .ph{aspect-ratio:4/3;border-radius:0}
+.type-tabs span{display:flex;justify-content:space-between;align-items:baseline;padding:12px 14px;font-family:var(--f-display);font-size:1.35rem;font-weight:600}
+.type-tabs small{font-family:var(--f-body);font-size:.85rem;color:var(--muted);font-weight:400}
+@media (max-width:640px){.type-tabs{grid-template-columns:1fr}}
+.room-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:56px;align-items:center}
+.room-chap.flip .collage{order:2}
+.collage{position:relative;padding-bottom:12%;padding-right:10%}
+.collage .main{aspect-ratio:4/3}
+.collage .sub{position:absolute;right:0;bottom:0;width:42%;aspect-ratio:1;border:6px solid var(--bg);border-radius:12px}
+.room-chap.flip .collage{padding-right:0;padding-left:10%}.room-chap.flip .collage .sub{right:auto;left:0}
+.room-copy{display:flex;flex-direction:column;gap:12px;min-width:0}
+.amen-list{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:.92rem}
+.amen-list li{padding-left:16px;position:relative}
+.amen-list li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;border:1px solid var(--gold)}
+.price-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+@media (max-width:860px){.room-grid{grid-template-columns:1fr;gap:28px}.room-chap.flip .collage{order:0}}
+.taal-chap{background:#0F1D18;color:#EFE9D8}
+.taal-chap .eyebrow{color:#D9BE7C}
+.taal-chap p{color:#B9C2BB}
+.taal-chap figcaption,.taal-chap .gitem span{color:#B9C2BB}
+.taal-head{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:end;margin-bottom:30px}
+@media (max-width:760px){.taal-head{grid-template-columns:1fr}}
+.mosaic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:170px;gap:12px}
+.mosaic figure{margin:0;position:relative;overflow:hidden;border-radius:12px}
+.mosaic .ph{position:absolute;inset:0;border-radius:12px}
+.mosaic figcaption{position:absolute;left:10px;bottom:8px;right:10px;font-size:.78rem;color:#F4F1E6!important;text-shadow:0 1px 6px rgba(0,0,0,.7);z-index:2}
+.mosaic .m0{grid-column:span 2;grid-row:span 2}
+.mosaic .m1{grid-column:span 2}
+.mosaic .m4{grid-column:span 2}
+.mosaic figure:hover img{transform:scale(1.06)}
+@media (max-width:700px){.mosaic{grid-template-columns:1fr 1fr;grid-auto-rows:140px}.mosaic .m0{grid-column:span 2}}
+.facts.light{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:28px}
+.facts.light div{border-top-color:rgba(239,233,216,.18)}
+.facts.light span{color:#B9C2BB}
+@media (max-width:700px){.facts.light{grid-template-columns:1fr 1fr}}
+.amen-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;margin-top:8px}
+.amen-grid h4{margin-bottom:4px}.amen-grid p{font-size:.92rem}
+@media (max-width:520px){.amen-grid{grid-template-columns:1fr}}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:34px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;transition:transform .35s var(--ease),border-color .35s}
+.feat:hover{transform:translateY(-4px);border-color:var(--gold)}
+.feat p{font-size:.92rem;flex:1}
+.feat-mark{width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);position:relative}
+.feat-mark::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--gold)}
+.timeline{display:grid;gap:22px;margin-top:34px;max-width:860px;margin-inline:auto}
+.tl{display:grid;grid-template-columns:220px minmax(0,1fr);gap:22px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.tl .ph{aspect-ratio:4/3}
+.tl b{color:var(--gold-ink)}
+@media (max-width:600px){.tl{grid-template-columns:1fr}}
+.gallery2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.gitem{border:none;background:none;padding:0;cursor:zoom-in;text-align:left;font:inherit;display:flex;flex-direction:column;gap:6px}
+.gitem{width:100%;min-width:0;color:inherit}
+.gitem .ph{aspect-ratio:4/3;width:100%;display:block}
+.gitem span{display:block;line-height:1.35}
+.gitem:hover img{transform:scale(1.06)}
+.gitem span{font-size:.8rem}
+@media (max-width:760px){.gallery2{grid-template-columns:1fr 1fr}}
+.lb .ph{aspect-ratio:16/10}
+
+.chap.hero{padding-block:0;align-items:flex-end}
+
+/* Photo carousels */
+.car{position:relative;overflow:hidden;border-radius:var(--r);background:radial-gradient(120% 90% at 20% 10%,var(--ph1),var(--ph2));min-height:100%}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;height:100%}
+.car-track::-webkit-scrollbar{display:none}
+.car-track .ph{flex:0 0 100%;scroll-snap-align:start;border-radius:0;aspect-ratio:auto;min-height:100%}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:none;background:rgba(15,29,24,.55);color:#F4F1E6;font-size:1.4rem;line-height:1;cursor:pointer;opacity:.85;transition:opacity .2s,background .2s;z-index:2}
+.car-btn:hover{background:rgba(15,29,24,.8)} .car-btn.prev{left:10px} .car-btn.next{right:10px}
+.car-count{position:absolute;left:10px;bottom:10px;background:rgba(15,29,24,.6);color:#F4F1E6;font-size:.72rem;padding:.2rem .55rem;border-radius:999px;z-index:2}
+.rcard>.car{border-radius:0;min-height:260px}
+.rcard>.car .car-track,.rcard>.car .ph{min-height:260px}
+.collage .main{aspect-ratio:4/3}.collage .main .car{height:100%}
+.car.big{aspect-ratio:16/9}.car.big .car-track{height:100%}
+.thumbs{display:flex;gap:8px;overflow-x:auto}
+.thumbs button{border:1px solid var(--line);padding:0;border-radius:8px;overflow:hidden;width:86px;flex:none;cursor:pointer;background:none}
+.thumbs button:hover{border-color:var(--gold)}
+.thumbs .ph{aspect-ratio:4/3;border-radius:0}.thumbs .ph::before{display:none}
+.photo-note{background:var(--gold-soft);color:var(--ink);font-size:.86rem;padding-block:8px;border-bottom:1px solid var(--line)}
+@media (max-width:760px){.rcard>.car,.rcard>.car .car-track,.rcard>.car .ph{min-height:220px}}
+
+/* Experiences */
+.howto{display:grid;gap:10px;margin-top:6px}
+.howto div{display:grid;grid-template-columns:110px 1fr;gap:12px;border-top:1px solid var(--line);padding-top:10px;font-size:.92rem}
+.howto b{font-family:var(--f-display);font-size:1.15rem;font-weight:600;color:var(--gold-ink)}
+.howto span{color:var(--muted)}
+.solo-prof{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px}
+.check{display:flex;gap:10px;align-items:center;font-size:.95rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--pine)}
+.exp-bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 68px);z-index:6;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);margin-inline:-20px;padding:12px 20px;border-bottom:1px solid var(--line)}
+.exp-tabs{max-width:760px;margin-inline:auto}
+.day-chips{margin-bottom:18px}
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.ev-grid.two{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+@media (max-width:420px){.ev-grid,.ev-grid.two{grid-template-columns:1fr}}
+.ev{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:box-shadow .35s,transform .35s var(--ease)}
+.ev:hover{box-shadow:var(--shadow)}
+.ev-img{position:relative}
+.ev-img .ph{aspect-ratio:16/10;border-radius:0}
+.ev-img .ph::before{display:none}
+.ev-date{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--ink);border-radius:10px;padding:4px 10px;text-align:center;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;line-height:1.1;box-shadow:0 4px 14px -6px rgba(0,0,0,.4)}
+.ev-date b{display:block;font-family:var(--f-display);font-size:1.4rem;letter-spacing:0}
+.ev-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.ev-b p{font-size:.9rem}
+.ev-meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.84rem;color:var(--muted)}
+.spots{height:5px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.spots i{display:block;height:100%;background:linear-gradient(90deg,var(--pine-2),var(--gold));border-radius:99px;transition:width .6s var(--ease)}
+.who-list{display:flex;flex-wrap:wrap;gap:6px}
+.chipp{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;background:var(--sunk);border-radius:999px;padding:.2rem .6rem .2rem .25rem;max-width:100%;min-width:0}
+.chipp i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--gold);color:#17221E;display:grid;place-items:center;font-size:.7rem;font-weight:600;flex:none}
+.chipp em{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chipp.muted{padding-left:.6rem}
+.xbtn{border:none;background:none;color:var(--bad);cursor:pointer;font-size:1rem;line-height:1;padding:0 2px}
+.ev-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.tall-car .car{aspect-ratio:4/5;width:100%}
+@media (max-width:820px){.tall-car .car{aspect-ratio:4/3}}
+.exp-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:32px}
+@media (max-width:760px){.exp-cards{grid-template-columns:1fr}}
+.xcard{position:relative;border:none;padding:0;border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:#F4F1E6;display:block;width:100%;min-height:300px;background:var(--ph2)}
+.xcard .ph{position:absolute;inset:0;border-radius:0}
+.xcard .ph::before{display:none}
+.xcard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(10,22,18,.85))}
+.xcard:hover img{transform:scale(1.06)}
+.xcard-b{position:absolute;left:18px;right:18px;bottom:16px;z-index:2;display:flex;flex-direction:column;gap:4px}
+.xcard-b b{font-family:var(--f-display);font-size:1.6rem;font-weight:600;line-height:1.1}
+.xcard-b small{font-size:.88rem;color:#DCE2DB}
+.seg button[disabled]{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.type-tabs .ph,.thumbs .ph{width:100%;display:block}
+.type-tabs button,.thumbs button{display:block}
+/* Scroll reveal */
+.rv{opacity:0;transform:translateY(42px);transition:opacity .9s var(--ease),transform .9s var(--ease),clip-path 1.2s var(--ease);transition-delay:calc(var(--d,0)*110ms)}
+.rv.rv-l{transform:translateX(-56px)} .rv.rv-r{transform:translateX(56px)} .rv.rv-z{transform:scale(.92)}
+.rv.rv-clip{opacity:1;transform:none;clip-path:inset(0 0 100% 0)}
+.rv.in{opacity:1;transform:none;clip-path:inset(0 0 0 0)}
+.rv-clip img{transform:scale(1.15);transition:transform 1.6s var(--ease)}
+.rv-clip.in img{transform:scale(1)}
+
+/* Section dots + progress */
+.prog{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#8E6B2A,#E6CF95);z-index:40;padding-top:env(safe-area-inset-top,0px)}
+.dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:25;display:flex;flex-direction:column;gap:12px}
+.dots button{position:relative;width:12px;height:12px;border-radius:50%;border:1px solid var(--gold);background:color-mix(in srgb,var(--bg) 60%,transparent);cursor:pointer;padding:0;transition:transform .3s,background .3s}
+.dots button.on{background:var(--gold);transform:scale(1.25)}
+.dots button span{position:absolute;right:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:.75rem;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:.2rem .55rem;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s}
+.dots button:hover span,.dots button.on span{opacity:1}
+.dots button.on span{opacity:0}.dots button:hover span{opacity:1}
+@media (max-width:760px){.dots{display:none}}
+
+/* Page curtain between pages */
+.curtain{position:fixed;inset:0;z-index:80;background:#0F1D18;display:grid;place-items:center;transform:translateY(100%);pointer-events:none;visibility:hidden}
+.curtain.in,.curtain.out{visibility:visible}
+.curtain.in{transform:none;transition:transform .55s cubic-bezier(.7,0,.3,1)}
+.curtain.out{transform:translateY(-100%);transition:transform .6s cubic-bezier(.7,0,.3,1)}
+.curtain .cw{display:flex;flex-direction:column;align-items:center;gap:10px;color:#EFE6CC;font-family:var(--f-display);letter-spacing:.4em;font-size:1.2rem}
+
+@media (prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important;clip-path:none!important}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="ld" id="loader" role="status" aria-label="Loading Allium">
+  <div class="ld-in">
+    <div id="ld-logo"></div>
+    <div class="wm-big" aria-hidden="true"><span style="--i:0">A</span><span style="--i:1">L</span><span style="--i:2">L</span><span style="--i:3">I</span><span style="--i:4">U</span><span style="--i:5">M</span></div>
+    <small>TAGAYTAY · RIDGE HOTEL</small>
+    <div class="ld-bar"><i></i></div>
+  </div>
+</div>
+
+<div class="prog" id="prog"></div>
+<div class="curtain" id="curtain" aria-hidden="true"><div class="cw" id="cw"></div></div>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#home" id="brand"></a>
+    <nav class="nav" id="nav">
+      <a href="#home" data-v="home">Home</a>
+      <a href="#rooms" data-v="rooms">Rooms</a>
+      <a href="#deck" data-v="deck">Viewing Deck</a>
+      <a href="#experiences" data-v="experiences">Experiences</a>
+      <a href="#bookings" data-v="bookings">My Bookings</a>
+      <a href="#staff" data-v="staff">Staff</a>
+    </nav>
+    <div class="acct" id="acct"></div>
+    <button class="burger" data-act="menu" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h14M2 9h14M2 13h14"/></svg></button>
+  </div>
+</header>
+
+<div class="photo-note" id="photo-note" hidden><div class="wrap">Room and Taal photos load from Unsplash. This preview blocks outside images, so download <b>index.html</b> and open it in a browser, or deploy it, to see every photo.</div></div>
+<main id="main"></main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="brand" id="fbrand"></div>
+    <div>Aguinaldo Highway, Tagaytay City, Cavite 4120 · <span class="mono">+63 46 413 2026</span> · stay@allium.ph</div>
+    <div>Check-in 2:00 PM · Check-out 12:00 NN</div>
+  </div>
+</footer>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ====== Helpers ====== */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const peso=n=>'₱'+Math.round(n).toLocaleString('en-PH');
+const pad=n=>String(n).padStart(2,'0');
+const isoOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const TODAY=isoOf(new Date());
+const addDays=(s,n)=>{const[y,m,d]=s.split('-').map(Number);return isoOf(new Date(y,m-1,d+n))};
+const utc=s=>{const[y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};
+const nightsOf=(a,b)=>Math.round((utc(b)-utc(a))/864e5);
+const fmt=(s,o={month:'short',day:'numeric',year:'numeric'})=>new Date(utc(s)).toLocaleDateString('en-PH',{...o,timeZone:'UTC'});
+const fmtShort=s=>fmt(s,{month:'short',day:'numeric'});
+const stamp=()=>new Date().toISOString();
+const rid=(p,n=5)=>p+Array.from({length:n},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+const hash=s=>{let h=5381;for(const c of s)h=((h<<5)+h+c.charCodeAt(0))|0;return 'h'+(h>>>0).toString(36)};
+const label=s=>s.replace('-',' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+/* ====== Brand ====== */
+let lgN=0;
+function logo(size=40){
+  const id='lg'+(lgN++); let fl='';
+  for(let i=0;i<12;i++){const a=i*Math.PI/6,x=(32+9.5*Math.cos(a)).toFixed(2),y=(19+9.5*Math.sin(a)).toFixed(2);
+    fl+=`<line pathLength="100" x1="32" y1="19" x2="${x}" y2="${y}" stroke-width=".55"/><circle class="fl" style="--d:${i}" cx="${x}" cy="${y}" r="1.75" fill="url(#${id})" stroke="none"/>`}
+  for(let i=0;i<6;i++){const a=i*Math.PI/3+Math.PI/6,x=(32+4.7*Math.cos(a)).toFixed(2),y=(19+4.7*Math.sin(a)).toFixed(2);
+    fl+=`<circle class="fl" style="--d:${12+i}" cx="${x}" cy="${y}" r="1.15" fill="url(#${id})" stroke="none"/>`}
+  return `<svg class="logo" width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F1DDA0"/><stop offset=".55" stop-color="#C29A47"/><stop offset="1" stop-color="#8E6B2A"/></linearGradient></defs><g fill="none" stroke="url(#${id})" stroke-linecap="round"><circle pathLength="100" cx="32" cy="19" r="13.6" stroke-width=".8"/>${fl}<path class="stem" pathLength="100" d="M32 32.6C32.6 42 31.4 50 32 61" stroke-width="1.5"/><path class="leaf" pathLength="100" d="M32 55C25 53 20.5 48 19 41C25 43 29.5 47 32 55Z" stroke-width="1.1"/><path class="leaf" pathLength="100" d="M32 50C38.5 48.5 43 44 44.5 37.5C38.5 39.5 34 43.5 32 50Z" stroke-width="1.1"/></g></svg>`;
+}
+const wordmark=()=>`${logo(38)}<span class="wm"><b>ALLIUM</b><small>TAGAYTAY</small></span>`;
+
+/* ====== Photos (Unsplash; a soft gradient shows if a photo is unavailable) ====== */
+const U=(id,w=1400)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=72`;
+const pic=(id,alt,cls='',w=1200,eager=false)=>`<div class="ph ${cls}"><img src="${U(id,w)}" alt="${esc(alt)}" ${eager?'':'loading="lazy"'} onload="imgOk()" onerror="imgFail(this)"></div>`;
+let imgGood=0,imgBad=0;
+function imgOk(){imgGood++;const n=document.getElementById('photo-note');if(n)n.hidden=true}
+function imgFail(el){el.remove();imgBad++;if(!imgGood){const n=document.getElementById('photo-note');if(n)n.hidden=false}}
+function slideTo(tr,i){const x=tr.clientWidth*i;if(typeof tr.scrollTo==='function')tr.scrollTo({left:x,behavior:reduce?'auto':'smooth'});else tr.scrollLeft=x}
+const carousel=(k,cls='')=>{const t=TYPES[k];return `<div class="car ${cls}" data-car><div class="car-track">${t.imgs.map((id,i)=>pic(id,`${t.name}, photo ${i+1} of ${t.imgs.length}`,'',1200)).join('')}</div>
+  <button class="car-btn prev" data-act="car" data-dir="-1" aria-label="Previous photo">‹</button><button class="car-btn next" data-act="car" data-dir="1" aria-label="Next photo">›</button>
+  <div class="car-count num">${t.imgs.length} photos</div></div>`};
+const IMG={
+  hero:'photo-1633670057397-b12fc5289e96',      /* lake and mountains from a hilltop */
+  search:'photo-1589182175047-646fdcdb5d14',    /* green volcano by the lake */
+  taal:[
+    ['photo-1760982228709-49e8d18dd284','Calm Taal Lake with Volcano Island behind'],
+    ['photo-1621420561012-1adfa8e6bc2e','Aerial view of Volcano Island and the lake'],
+    ['photo-1760982274405-5f3286a46a37','Volcano Island and lakeside floating houses'],
+    ['photo-1760982274354-6ec125bd0a51','Fish pens on Taal Lake below the volcano'],
+    ['photo-1705806340826-aeb03876f450','Cloud resting over the volcano'],
+    ['photo-1578841459285-16c1c03b3473','Taal Volcano in black and white'],
+    ['photo-1653481861929-ce428fd6a340','Tree-lined shore of Taal Lake'],
+    ['photo-1583984675124-96771ce431f3','Big sky over the lake at midday'],
+  ],
+  balcony:'photo-1681971636852-de901b958b22',
+  pool:'photo-1551882547-ff40c63fe5fa',
+  lobby:'photo-1621293954908-907159247fc8',
+};
+
+/* ====== Rooms & rates ====== */
+const TYPES={
+  economy:{name:'Economy Room',short:'Economy',rate:3200,cap:2,size:'22 sqm',bed:'1 queen bed',view:'Garden view',floor:'1st floor',
+    imgs:['photo-1631049307264-da0ec9d70304','photo-1629140727571-9b5c6f6267b4','photo-1631049552057-403cdb8f0658','photo-1711059985570-4c32ed12a12c'],
+    blurb:'A quiet, well-made room for two, a few steps from the pine garden. Warm linens, a rain shower and fast Wi-Fi.',
+    amen:['Queen bed with duvet','Rain shower','43" smart TV','Coffee and tea set','Free Wi-Fi','Daily housekeeping']},
+  deluxe:{name:'Deluxe Room',short:'Deluxe',rate:5800,cap:3,size:'34 sqm',bed:'1 king bed + daybed',view:'Ridge view',floor:'2nd floor',
+    imgs:['photo-1618773928121-c32242e63f39','photo-1611892440504-42a792e24d32','photo-1590490360182-c33d57733427','photo-1566665797739-1674de7a421a','photo-1496417263034-38ec4f0b665a'],
+    blurb:'More room to breathe, with a reading daybed by the window and a view down the ridge toward the lake haze.',
+    amen:['King bed + daybed','Soaking tub','Ridge-facing window seat','Nespresso machine','Breakfast for two','Bathrobes and slippers']},
+  vip:{name:'VIP Suite',short:'VIP',rate:11500,cap:4,size:'58 sqm',bed:'1 king bed, separate living room',view:'Taal Lake view, private balcony',floor:'3rd floor',
+    imgs:['photo-1582719478250-c89cae4dc85b','photo-1578683010236-d716f9a3f461','photo-1583847268964-b28dc8f51f92','photo-1568495248636-6432b97bd949','photo-1681971636852-de901b958b22'],
+    blurb:'Our top-floor suites open onto a private balcony facing Taal Volcano. Butler service and reserved deck seating at sunset.',
+    amen:['Private balcony','Separate living room','Butler service','Reserved sunset deck seats','Breakfast in suite','Airport transfer on request']},
+};
+const ROOMS=[...Array(10)].map((_,i)=>({no:'E'+(101+i),type:'economy'}))
+  .concat([...Array(6)].map((_,i)=>({no:'D'+(201+i),type:'deluxe'})))
+  .concat([...Array(4)].map((_,i)=>({no:'V'+(301+i),type:'vip'})));
+const PROMOS={TAGAYTAY10:{pct:10,label:'TAGAYTAY10 · 10% off'},STAYLONGER:{pct:15,label:'STAYLONGER · 15% off 3+ nights',minN:3}};
+const SERVICE=.10, VAT=.12, DEPOSIT=.30;
+const METHODS={gcash:'GCash',maya:'Maya',card:'Credit/Debit card',hotel:'Pay at hotel',cash:'Cash',bank:'Bank transfer'};
+
+/* ====== Data store (saved in this browser) ====== */
+const KEY='allium-hotel-v1';
+let db;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):null}catch(e){return null}}
+
+function quote(type,ci,co,promo){
+  const n=Math.max(0,nightsOf(ci,co)), rate=TYPES[type].rate, sub=rate*n;
+  const p=PROMOS[(promo||'').trim().toUpperCase()]; let disc=0, promoLabel='';
+  if(p&&(!p.minN||n>=p.minN)){disc=Math.round(sub*p.pct/100);promoLabel=p.label}
+  const net=sub-disc, svc=Math.round(net*SERVICE), vat=Math.round((net+svc)*VAT);
+  return {n,rate,sub,disc,promoLabel,svc,vat,total:net+svc+vat};
+}
+const paidOf=r=>r.payments.reduce((s,p)=>s+p.amt,0);
+const balOf=r=>r.status==='cancelled'?0:Math.max(0,grandOf(r)-paidOf(r));
+const active=r=>r.status==='confirmed'||r.status==='checked-in';
+
+function seed(){
+  const users=[
+    {id:'u1',name:'Andrea Santos',email:'guest@allium.ph',phone:'0917 555 0142',pw:hash('guest123'),since:addDays(TODAY,-60)},
+    {id:'u2',name:'Miguel Reyes',email:'miguel.reyes@mail.ph',phone:'0918 555 0188',pw:hash('demo1234'),since:addDays(TODAY,-40)},
+    {id:'u3',name:'Patricia Lim',email:'pat.lim@mail.ph',phone:'0927 555 0110',pw:hash('demo1234'),since:addDays(TODAY,-35)},
+    {id:'u4',name:'Jose Dela Cruz',email:'jdelacruz@mail.ph',phone:'0905 555 0177',pw:hash('demo1234'),since:addDays(TODAY,-25)},
+    {id:'u5',name:'Kim Navarro',email:'kim.navarro@mail.ph',phone:'0966 555 0123',pw:hash('demo1234'),since:addDays(TODAY,-20)},
+  ];
+  const mk=(id,u,room,ci,co,g,status,pay,extra={})=>{
+    const user=users.find(x=>x.id===u), type=ROOMS.find(r=>r.no===room).type, q=quote(type,addDays(TODAY,ci),addDays(TODAY,co));
+    const amt=pay==='full'?q.total:pay==='dep'?Math.round(q.total*DEPOSIT):0;
+    return {id,userId:u,guest:{name:user.name,email:user.email,phone:user.phone},roomNo:room,type,checkIn:addDays(TODAY,ci),checkOut:addDays(TODAY,co),guests:g,
+      status,total:q.total,quote:q,promo:'',requests:extra.req||'',createdAt:addDays(TODAY,ci-9)+'T09:00:00.000Z',
+      payments:amt?[{amt,method:extra.m||'gcash',at:addDays(TODAY,ci-9),ref:rid('PAY-',6)}]:[],extras:[],
+      history:[{at:addDays(TODAY,ci-9),what:'Reservation created online'}],fee:0};
+  };
+  const res=[
+    mk('ALM-7Q2KD','u1','D202',-1,2,2,'checked-in','full',{req:'Extra pillows, please.'}),
+    mk('ALM-3HXP8','u2','V301',0,3,3,'confirmed','dep',{m:'card',req:'Celebrating our anniversary.'}),
+    mk('ALM-9MBT4','u3','E103',-2,0,2,'checked-in','dep'),
+    mk('ALM-5RWNE','u4','E105',3,5,2,'confirmed','dep',{m:'maya'}),
+    mk('ALM-2CJZA','u5','V302',-10,-7,4,'checked-out','full',{m:'card'}),
+    mk('ALM-8GKUV','u2','D204',-20,-18,2,'checked-out','full'),
+    mk('ALM-6TFLS','u3','E101',6,8,1,'cancelled','none'),
+    mk('ALM-4YDNQ','u1','E107',10,12,2,'confirmed','dep'),
+    mk('ALM-7PEXR','u4','D201',-1,1,3,'checked-in','full',{m:'bank'}),
+    mk('ALM-3VUAH','u5','E102',-5,-3,2,'checked-out','full'),
+  ];
+  return {users,res,oos:{V304:'Balcony glass replacement'},session:{userId:null,staff:false},sample:true,signups:[]};
+}
+db=load()||seed(); save();
+
+/* ====== Availability & status ====== */
+const overlaps=(a1,a2,b1,b2)=>a1<b2&&b1<a2;
+function roomFree(no,ci,co,exclude){
+  if(db.oos[no]) return false;
+  return !db.res.some(r=>r.id!==exclude&&r.roomNo===no&&active(r)&&overlaps(ci,co,r.checkIn,r.checkOut));
+}
+const freeRooms=(type,ci,co,ex)=>ROOMS.filter(r=>r.type===type&&roomFree(r.no,ci,co,ex)).map(r=>r.no);
+function resOnRoom(no,date=TODAY){
+  return db.res.find(r=>r.roomNo===no&&r.status==='checked-in')||db.res.find(r=>r.roomNo===no&&r.status==='confirmed'&&r.checkIn<=date&&date<r.checkOut);
+}
+function roomStatus(no){
+  if(db.oos[no]) return 'maintenance';
+  const r=resOnRoom(no); if(!r) return 'available';
+  return r.status==='checked-in'?'occupied':'reserved';
+}
+const nextArrival=no=>db.res.filter(r=>r.roomNo===no&&r.status==='confirmed'&&r.checkIn>TODAY).sort((a,b)=>a.checkIn<b.checkIn?-1:1)[0];
+const user=()=>db.users.find(u=>u.id===db.session.userId);
+
+/* ====== UI plumbing ====== */
+function toast(msg,kind=''){const t=document.createElement('div');t.className='toast '+kind;t.textContent=msg;$('#toasts').append(t);setTimeout(()=>{t.style.transition='opacity .4s';t.style.opacity=0;setTimeout(()=>t.remove(),400)},2800)}
+function openModal(title,body,{wide=false}={}){
+  let mb=$('#mb');
+  if(!mb){mb=document.createElement('div');mb.id='mb';mb.className='mb';mb.addEventListener('mousedown',e=>{if(e.target===mb)closeModal()});document.body.append(mb)}
+  mb.innerHTML=`<div class="md ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="md-h"><h3>${title}</h3><button class="x" data-act="close" aria-label="Close">×</button></div><div class="md-b" id="mdb">${body}</div></div>`;
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{const f=mb.querySelector('input:not([type=radio]),select');f&&f.focus({preventScroll:true})},60);
+}
+function closeModal(){const mb=$('#mb');if(mb){mb.remove();document.body.style.overflow=''}}
+function confirmBox(title,msg,okLabel,fn,danger=true){
+  openModal(title,`<p>${msg}</p><div class="bk-foot"><button class="btn btn-ghost" data-act="close">Keep it</button><button class="btn ${danger?'btn-danger':'btn-primary'}" id="cfm">${okLabel}</button></div>`);
+  $('#cfm').onclick=()=>{fn();};
+}
+const pill=s=>`<span class="pill p-${s}">${label(s)}</span>`;
+const search={ci:TODAY,co:addDays(TODAY,2),guests:2,type:'any',sort:'price'};
+const ui={view:'home',admTab:'overview',resQ:'',resF:'all',repFrom:addDays(TODAY,-30),repTo:addDays(TODAY,30)};
+let afterAuth=null;
+
+/* ====== Header ====== */
+function renderAcct(){
+  const u=user(), s=db.session.staff;
+  $('#acct').innerHTML=u?`<span class="who muted" style="font-size:.88rem">Hi, ${esc(u.name.split(' ')[0])}</span><button class="btn btn-ghost btn-sm" data-act="logout">Sign out</button>`
+    :`<button class="btn btn-primary btn-sm" data-act="auth">Sign in</button>`;
+  if(s&&!u) $('#acct').innerHTML=`<span class="pill p-reserved">Staff</span><button class="btn btn-ghost btn-sm" data-act="staff-out">Leave console</button>`;
+}
+
+/* ====== Views ====== */
+function vHome(){
+  const tonight=t=>freeRooms(t,TODAY,addDays(TODAY,1)).length;
+  const roomChap=(k,i)=>{const t=TYPES[k],n=tonight(k),flip=i%2===1;return `
+  <section class="chap room-chap ${flip?'flip':''}" id="c-${k}" data-chap="${t.short}">
+    <div class="wrap room-grid">
+      <div class="collage">
+        <div class="main rv rv-clip">${carousel(k)}</div>
+        ${pic(t.imgs[1],t.name+' detail','sub rv rv-clip',800).replace('class="ph sub','style="--d:2" class="ph sub')}
+      </div>
+      <div class="room-copy">
+        <div class="eyebrow rv" style="--d:1">${t.floor} · ${ROOMS.filter(r=>r.type===k).length} rooms · ${t.view}</div>
+        <h2 class="rv" style="--d:2">${t.name}</h2>
+        <p class="muted rv" style="--d:3">${t.blurb}</p>
+        <div class="specs rv" style="--d:3"><span>${t.size}</span><span>${t.bed}</span><span>Up to ${t.cap} guests</span></div>
+        <ul class="amen-list rv" style="--d:4">${t.amen.map(a=>`<li>${a}</li>`).join('')}</ul>
+        <div class="price-row rv" style="--d:5"><div class="rate num">${peso(t.rate)}<small> / night</small></div>${n?`<span class="pill p-available">${n} free tonight</span>`:`<span class="pill p-cancelled">Full tonight</span>`}</div>
+        <div class="btns rv" style="--d:6"><button class="btn btn-primary" data-act="book" data-type="${k}">Book ${t.short}</button><button class="btn btn-ghost" data-act="room-detail" data-type="${k}">See all photos</button></div>
+      </div>
+    </div>
+  </section>`};
+  return `
+  <section class="chap hero" id="c-welcome" data-chap="Welcome">
+    ${pic(IMG.hero,'Taal Lake and the ridge seen from Tagaytay','hero-ph',2000,true)}
+    <div class="hero-shade"></div>
+    <div class="hero-copy"><div class="wrap stagger">
+      <div class="eyebrow" style="--i:0">Tagaytay Ridge · 640 m above sea level</div>
+      <h1 style="--i:1">Wake up above Taal.</h1>
+      <p style="--i:2">Twenty rooms on the ridge, cool mornings near 20°C, and a viewing deck that looks straight at Volcano Island.</p>
+      <div class="btns" style="--i:3"><button class="btn btn-gold" data-act="chap" data-id="c-search">Check availability</button><button class="btn btn-glass" data-act="chap" data-id="c-taal">See the Taal view</button></div>
+    </div></div>
+    <button class="cue" data-act="chap" data-id="c-search" aria-label="Scroll to next section"><span>Scroll</span><i></i></button>
+  </section>
+
+  <section class="chap" id="c-search" data-chap="Availability">
+    <div class="wrap split">
+      <div class="split-copy">
+        <div class="eyebrow rv">Step 1</div>
+        <h2 class="rv" style="--d:1">When are you coming up?</h2>
+        <p class="muted rv" style="--d:2">Pick your dates and we'll show every free room, down to the room number.</p>
+        <form class="search-card rv" style="--d:3" data-form="search">
+          <div class="row">
+            <label class="field">Check-in<input type="date" id="s-ci" name="ci" value="${search.ci}" min="${TODAY}" required></label>
+            <label class="field">Check-out<input type="date" id="s-co" name="co" value="${search.co}" min="${addDays(TODAY,1)}" required></label>
+          </div>
+          <div class="row">
+            <label class="field">Guests<select id="s-g" name="guests">${[1,2,3,4].map(n=>`<option ${n==search.guests?'selected':''}>${n}</option>`).join('')}</select></label>
+            <label class="field">Room type<select id="s-t" name="type"><option value="any">Any room</option>${Object.entries(TYPES).map(([k,t])=>`<option value="${k}" ${search.type===k?'selected':''}>${t.short}</option>`).join('')}</select></label>
+          </div>
+          <button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">Show available rooms</button>
+        </form>
+        <div class="tonight rv" style="--d:4">${Object.entries(TYPES).map(([k,t])=>`<div><b class="num">${tonight(k)}</b><span>${t.short} free tonight</span></div>`).join('')}</div>
+      </div>
+      ${pic(IMG.search,'Volcano Island seen across Taal Lake','tall rv rv-clip',1200)}
+    </div>
+  </section>
+
+  <section class="chap intro-chap" id="c-rooms" data-chap="Rooms">
+    <div class="wrap center">
+      <div class="eyebrow rv">Step 2 · Rooms & suites</div>
+      <h2 class="rv" style="--d:1">Three ways to stay</h2>
+      <p class="muted rv" style="--d:2;max-width:52ch;margin-inline:auto">10 Economy rooms, 6 Deluxe rooms and 4 VIP suites. Keep scrolling to see each one.</p>
+      <div class="type-tabs rv" style="--d:3">${Object.entries(TYPES).map(([k,t])=>`<button data-act="chap" data-id="c-${k}">${pic(t.imgs[0],t.name,'',500)}<span>${t.short}<small class="num">${peso(t.rate)}</small></span></button>`).join('')}</div>
+    </div>
+  </section>
+  ${Object.keys(TYPES).map(roomChap).join('')}
+
+  <section class="chap taal-chap" id="c-taal" data-chap="Taal View">
+    <div class="wrap">
+      <div class="taal-head">
+        <div><div class="eyebrow rv">The Viewing Deck</div><h2 class="rv" style="--d:1">Taal at first light, and again at dusk.</h2></div>
+        <p class="rv" style="--d:2">Forty meters of open timber deck on the ridge edge. On a clear morning you can trace the crater rim of Volcano Island and the far Batangas shore.</p>
+      </div>
+      <div class="mosaic">${IMG.taal.slice(0,5).map(([id,alt],i)=>`<figure class="m${i} rv rv-z" style="--d:${i}">${pic(id,alt,'',i?900:1600)}<figcaption>${alt}</figcaption></figure>`).join('')}</div>
+      <div class="facts light">
+        <div class="rv"><b class="num">5:00 AM</b><span>Deck opens for sunrise</span></div>
+        <div class="rv" style="--d:1"><b class="num">5:15 PM</b><span>Golden hour over the lake</span></div>
+        <div class="rv" style="--d:2"><b class="num">≈ 20°C</b><span>Typical early-morning air</span></div>
+        <div class="rv" style="--d:3"><b>Free</b><span>For all in-house guests</span></div>
+      </div>
+      <button class="btn btn-gold rv" style="--d:4;margin-top:26px" data-act="go" data-to="deck">Explore the full Taal gallery</button>
+    </div>
+  </section>
+
+  <section class="chap" id="c-amen" data-chap="Amenities">
+    <div class="wrap split rev">
+      ${pic(IMG.pool,'Ridge-side pool','tall rv rv-clip',1200)}
+      <div class="split-copy">
+        <div class="eyebrow rv">Staying with us</div>
+        <h2 class="rv" style="--d:1">Small hotel, full service</h2>
+        <div class="amen-grid">
+          ${[['Farm breakfast','Batangas barako coffee, local tablea and Amadeo farm eggs.'],['Ridge-side pool','Heated infinity pool, open 6:00 AM to 9:00 PM.'],['Bulalo nights','Slow-cooked bone marrow soup on Fridays and Saturdays.'],['Easy arrival','Free parking and a shuttle to Olivarez Plaza and Sky Ranch.']].map(([h,p],i)=>`<div class="rv" style="--d:${i+2}"><h4>${h}</h4><p class="muted">${p}</p></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chap intro-chap" id="c-exp" data-chap="Experiences">
+    <div class="wrap">
+      <div class="center"><div class="eyebrow rv">Experiences</div><h2 class="rv" style="--d:1">More than a room</h2><p class="muted rv" style="--d:2;max-width:52ch;margin-inline:auto">Join fellow solo guests on a field trip, roll out a mat on the deck, or spend half an hour with our visiting capybaras.</p></div>
+      <div class="exp-cards">
+        ${[['solo','Solo Circle','Classes and field trips for guests traveling alone.','photo-1629185752152-fe65698ddee4'],['yoga','Yoga on the deck','Sunrise and golden-hour classes, every day.',EXP_IMG.yoga[0]],['capy','Capybara meet & greet','Keeper-led visits with our partner zoo.',EXP_IMG.capy[0]]]
+          .map(([k,h,p,img],i)=>`<button class="xcard rv rv-z" style="--d:${i}" data-act="exp-open" data-tab="${k}">${pic(img,h,'',900)}<span class="xcard-b"><b>${h}</b><small>${p}</small></span></button>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="chap" id="c-manage" data-chap="Your booking">
+    <div class="wrap">
+      <div class="center"><div class="eyebrow rv">Step 3 · After you book</div><h2 class="rv" style="--d:1">Manage everything yourself</h2></div>
+      <div class="feature-grid">
+        ${[['Book online','Choose dates, room type and the exact room number, then pay a 30% deposit.','book','Start a booking'],
+           ['Change your dates','Move your stay or switch room type. We re-check availability and update the bill.','bookings','Open My Bookings'],
+           ['Cancel for free','No charge up to 48 hours before check-in. Refunds are recorded on your receipt.','bookings','Manage a booking'],
+           ['Receipts and payments','View your folio anytime, copy the receipt, and pay any remaining balance.','bookings','See receipts']]
+          .map(([h,p,a,b],i)=>`<div class="feat rv" style="--d:${i}"><span class="feat-mark"></span><h3>${h}</h3><p class="muted">${p}</p><button class="btn btn-ghost btn-sm" ${a==='book'?'data-act="book"':`data-act="go" data-to="${a}"`}>${b}</button></div>`).join('')}
+      </div>
+    </div>
+  </section>
+  <nav class="dots" id="dots" aria-label="Page sections"></nav>`;
+}
+
+function heatTable(){
+  const days=[...Array(14)].map((_,i)=>addDays(TODAY,i));
+  return `<table><thead><tr><th>Free rooms per night</th>${days.map(d=>`<th>${new Date(utc(d)).getUTCDate()}<span class="wk">${new Date(utc(d)).toLocaleDateString('en-PH',{weekday:'short',timeZone:'UTC'})}</span></th>`).join('')}</tr></thead><tbody>
+  ${Object.entries(TYPES).map(([k,t])=>`<tr><td>${t.short} <span class="muted">/ ${ROOMS.filter(r=>r.type===k).length}</span></td>${days.map(d=>{const n=freeRooms(k,d,addDays(d,1)).length,c=n===0?'h0':n<=1?'h1':'h2';return `<td><span class="hc ${c}" title="${n} free on ${fmt(d)}">${n}</span></td>`}).join('')}</tr>`).join('')}
+  </tbody></table>`;
+}
+function roomResults(){
+  const n=nightsOf(search.ci,search.co);
+  if(n<1) return `<div class="panel empty"><h3>Pick a check-out date after check-in</h3><p class="muted">Stays need at least one night.</p></div>`;
+  let types=Object.keys(TYPES).filter(k=>search.type==='any'||k===search.type).filter(k=>TYPES[k].cap>=search.guests);
+  types.sort((a,b)=>search.sort==='price'?TYPES[a].rate-TYPES[b].rate:TYPES[b].rate-TYPES[a].rate);
+  if(!types.length) return `<div class="panel empty"><h3>No room type fits ${search.guests} guests</h3><p class="muted">Our VIP suites sleep up to 4. Try fewer guests or a different room type.</p></div>`;
+  return types.map((k,i)=>{const t=TYPES[k],free=freeRooms(k,search.ci,search.co),q=quote(k,search.ci,search.co);
+    return `<article class="rcard" style="--i:${i}">
+      ${carousel(k)}
+      <div class="rcard-b">
+        <div class="tcard-top"><div><div class="eyebrow">${t.floor} · ${t.view}</div><h3 style="margin-top:4px">${t.name}</h3></div><div class="rate num">${peso(t.rate)}<small> / night</small></div></div>
+        <div class="specs"><span>${t.size}</span><span>${t.bed}</span><span>Up to ${t.cap} guests</span></div>
+        <div><div class="muted" style="font-size:.82rem;margin-bottom:6px">${free.length} of ${ROOMS.filter(r=>r.type===k).length} rooms free for ${fmtShort(search.ci)} – ${fmtShort(search.co)} · tap a room to book it</div>
+          <div class="chips">${ROOMS.filter(r=>r.type===k).map(r=>{const ok=free.includes(r.no);return `<button class="chip" ${ok?`data-act="book" data-type="${k}" data-room="${r.no}"`:'disabled'} title="${ok?'Available':db.oos[r.no]?'Under maintenance':'Booked for these dates'}">${r.no}</button>`}).join('')}</div></div>
+        <div class="tcard-f"><div><b class="num">${peso(q.total)}</b> <span class="muted" style="font-size:.86rem">for ${n} night${n>1?'s':''}, taxes and service charge included</span></div>
+          <div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" data-act="room-detail" data-type="${k}">Details</button><button class="btn btn-primary btn-sm" data-act="book" data-type="${k}" ${free.length?'':'disabled'}>${free.length?'Book this type':'Sold out'}</button></div></div>
+      </div></article>`}).join('');
+}
+function vRooms(){
+  return `<section><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Availability</div><h2>Find your room</h2></div><p class="muted">Room status updates the moment a booking is made, changed or cancelled.</p></div>
+    <div class="filters">
+      <label class="field">Check-in<input type="date" id="f-ci" data-flt="ci" value="${search.ci}" min="${TODAY}"></label>
+      <label class="field">Check-out<input type="date" id="f-co" data-flt="co" value="${search.co}" min="${addDays(search.ci,1)}"></label>
+      <label class="field">Guests<select id="f-g" data-flt="guests">${[1,2,3,4].map(n=>`<option ${n==search.guests?'selected':''}>${n}</option>`).join('')}</select></label>
+      <label class="field">Sort by<select id="f-s" data-flt="sort"><option value="price" ${search.sort==='price'?'selected':''}>Price, low to high</option><option value="price-d" ${search.sort!=='price'?'selected':''}>Price, high to low</option></select></label>
+      <div class="field">Type<div class="seg" id="f-type">${[['any','All'],...Object.entries(TYPES).map(([k,t])=>[k,t.short])].map(([k,l])=>`<button type="button" data-act="ftype" data-type="${k}" class="${search.type===k?'on':''}">${l}</button>`).join('')}</div></div>
+    </div>
+    <div class="heat" id="heat">${heatTable()}</div>
+    <div class="results" id="results">${roomResults()}</div>
+  </div></section>`;
+}
+
+function vDeck(){
+  const [first,...rest]=IMG.taal;
+  return `
+  <section class="chap hero deck-top" id="d-top" data-chap="Taal View">
+    ${pic(first[0],first[1],'hero-ph',2000,true)}
+    <div class="hero-shade"></div>
+    <div class="hero-copy"><div class="wrap stagger">
+      <div class="eyebrow" style="--i:0">Open daily · 5:00 AM – 10:00 PM</div>
+      <h1 style="--i:1">The Taal Viewing Deck</h1>
+      <p style="--i:2">A lake inside a volcano, on an island inside a lake. From our deck you see all of it.</p>
+    </div></div>
+    <button class="cue" data-act="chap" data-id="d-day" aria-label="Scroll to next section"><span>Scroll</span><i></i></button>
+  </section>
+
+  <section class="chap" id="d-day" data-chap="A day on the deck">
+    <div class="wrap">
+      <div class="center"><div class="eyebrow rv">A day on the deck</div><h2 class="rv" style="--d:1">From cloud sea to deck bar</h2></div>
+      <div class="timeline">
+        ${[['5:30 AM','Sunrise and cloud sea','Best from November to February, when mist settles on the lake.',rest[3]],
+           ['6:30 AM','Ridge yoga','Free 45-minute session. Mats and blankets provided.',rest[5]],
+           ['5:15 PM','Golden hour','VIP guests have reserved front-rail seats.',rest[0]],
+           ['7:00 PM','Deck bar','Hot tsokolate, local craft beer, and bulalo on weekends.',[IMG.balcony,'Balcony view at dusk']]]
+          .map(([t,h,p,[id,alt]],i)=>`<div class="tl rv ${i%2?'rv-r':'rv-l'}" style="--d:${i}">${pic(id,alt,'',800)}<div><b class="mono">${t}</b><h3>${h}</h3><p class="muted">${p}</p></div></div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="chap taal-chap" id="d-gallery" data-chap="Gallery">
+    <div class="wrap">
+      <div class="taal-head"><div><div class="eyebrow rv">Gallery</div><h2 class="rv" style="--d:1">Volcano Island, every angle</h2></div><p class="rv" style="--d:2">Tap any photo to see it larger.</p></div>
+      <div class="gallery2">${IMG.taal.map(([id,alt],i)=>`<button class="gitem rv rv-z" style="--d:${i%4}" data-act="lightbox" data-i="${i}">${pic(id,alt,'',1000)}<span>${alt}</span></button>`).join('')}</div>
+    </div>
+  </section>
+
+  <section class="chap" id="d-know" data-chap="Good to know">
+    <div class="wrap split">
+      <div class="split-copy">
+        <div class="eyebrow rv">Good to know</div>
+        <h2 class="rv" style="--d:1">About the view</h2>
+        <div class="amen-grid">
+          ${[['Volcano Island','The small island in the lake is the active vent of Taal, one of the most closely watched volcanoes in the Philippines.'],
+             ['Clearest months','December to April usually brings the sharpest views. Rainy months add drama with low cloud.'],
+             ['Deck access','Free for in-house guests. Bring a light jacket for early mornings.'],
+             ['Safety first','We follow PHIVOLCS advisories and close the deck when air quality or alert levels call for it.']]
+            .map(([h,p],i)=>`<div class="rv" style="--d:${i+2}"><h4>${h}</h4><p class="muted">${p}</p></div>`).join('')}
+        </div>
+        <div class="btns rv" style="--d:6;margin-top:22px"><button class="btn btn-primary" data-act="book" data-type="vip">Book a VIP Suite with balcony</button><button class="btn btn-ghost" data-act="go" data-to="rooms">See all rooms</button></div>
+      </div>
+      ${pic(IMG.balcony,'Suite balcony looking out over the water','tall rv rv-clip',1200)}
+    </div>
+  </section>
+  <nav class="dots" id="dots" aria-label="Page sections"></nav>`;
+}
+function lightbox(i){
+  i=(+i+IMG.taal.length)%IMG.taal.length; const [id,alt]=IMG.taal[i];
+  openModal(alt,`<div class="lb">${pic(id,alt,'',2000)}</div><div class="bk-foot"><button class="btn btn-ghost" data-act="lightbox" data-i="${i-1}">Previous</button><span class="muted num" style="align-self:center">${i+1} / ${IMG.taal.length}</span><button class="btn btn-ghost" data-act="lightbox" data-i="${i+1}">Next</button></div>`,{wide:true});
+}
+
+function vBookings(){
+  const u=user();
+  if(!u) return `<section><div class="wrap"><div class="panel empty rv"><div class="eyebrow">My bookings</div><h2>Sign in to see your reservations</h2><p class="muted" style="max-width:46ch">View receipts, change dates, pay a balance or cancel a stay. Demo guest: guest@allium.ph / guest123</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn btn-primary" data-act="auth">Sign in</button><button class="btn btn-ghost" data-act="auth" data-mode="register">Create account</button></div></div></div></section>`;
+  const mine=db.res.filter(r=>r.userId===u.id).sort((a,b)=>a.checkIn<b.checkIn?1:-1);
+  const up=mine.filter(active), past=mine.filter(r=>!active(r));
+  const item=(r,i)=>{const t=TYPES[r.type],bal=balOf(r);return `<div class="bitem" style="--i:${i}">
+    ${pic(t.imgs[0],t.name,'',400)}
+    <div style="min-width:0"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h4>${t.name} · <span class="mono">${r.roomNo}</span></h4>${pill(r.status)}</div>
+      <div class="muted" style="font-size:.9rem">${fmt(r.checkIn)} – ${fmt(r.checkOut)} · ${nightsOf(r.checkIn,r.checkOut)} night(s) · ${r.guests} guest(s)</div>
+      <div style="font-size:.9rem"><span class="mono">${r.id}</span> · Total <b class="num">${peso(grandOf(r))}</b>${bal>0?` · <span style="color:var(--warn)">Balance ${peso(bal)}</span>`:r.status!=='cancelled'?' · <span style="color:var(--ok)">Fully paid</span>':''}</div></div>
+    <div class="bitem-acts">
+      <button class="btn btn-ghost btn-sm" data-act="receipt" data-id="${r.id}">Receipt</button>
+      ${r.status==='confirmed'?`<button class="btn btn-ghost btn-sm" data-act="early" data-id="${r.id}">${earlyOf(r)?'Early check-in: '+EARLY.find(e=>e.k===earlyOf(r).k).t:'Early check-in'}</button><button class="btn btn-ghost btn-sm" data-act="modify" data-id="${r.id}">Modify</button><button class="btn btn-danger btn-sm" data-act="cancel" data-id="${r.id}">Cancel</button>`:''}
+      ${bal>0&&active(r)?`<button class="btn btn-primary btn-sm" data-act="pay" data-id="${r.id}">Pay balance</button>`:''}
+    </div></div>`};
+  const tab=ui.bkTab||'upcoming', spend=mine.reduce((s,r)=>s+paidOf(r),0);
+  let body='';
+  if(tab==='upcoming') body=up.length?up.map(item).join(''):`<div class="panel empty"><p class="muted">No upcoming stays yet.</p><button class="btn btn-primary" data-act="go" data-to="rooms">Browse rooms</button></div>`;
+  if(tab==='past') body=past.length?past.map(item).join(''):`<div class="panel empty"><p class="muted">Past and cancelled stays will show here.</p></div>`;
+  if(tab==='profile') body=`<div class="panel" style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <div><span class="eyebrow">Name</span><div>${esc(u.name)}</div></div><div><span class="eyebrow">Email</span><div>${esc(u.email)}</div></div>
+    <div><span class="eyebrow">Mobile</span><div class="mono">${esc(u.phone)}</div></div><div><span class="eyebrow">Member since</span><div>${fmt(u.since)}</div></div>
+    <div><span class="eyebrow">Stays</span><div>${mine.filter(r=>r.status!=='cancelled').length}</div></div><div><span class="eyebrow">Paid to date</span><div class="num">${peso(spend)}</div></div>
+    <div><button class="btn btn-primary" data-act="profile">Edit my details</button></div></div>`;
+  return `<section><div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">My bookings</div><h2>Welcome back, ${esc(u.name.split(' ')[0])}</h2></div>
+      <button class="btn btn-primary" data-act="book">New reservation</button></div>
+    <div class="tabs" style="margin-bottom:20px;max-width:560px">${[['upcoming',`Upcoming (${up.length})`],['past',`Past & cancelled (${past.length})`],['profile','My details']].map(([k,l])=>`<button class="${tab===k?'on':''}" data-act="bktab" data-tab="${k}">${l}</button>`).join('')}</div>
+    <div class="bk-list view">${body}</div>
+  </div></section>`;
+}
+
+/* ====== Auth ====== */
+let authCtx={note:'',pre:{}};
+function openAuth(mode='login',note='',pre={},keep=false){
+  if(!keep) authCtx={note,pre}; ({note,pre}=authCtx);
+  const login=mode==='login', inBooking=!!afterAuth&&bk&&!bk.staff;
+  openModal(login?'Sign in':'Create your account',`
+    <div class="tabs"><button class="${login?'on':''}" data-act="auth-tab" data-mode="login">Sign in</button><button class="${login?'':'on'}" data-act="auth-tab" data-mode="register">Create account</button></div>
+    ${note?`<div class="hint">${esc(note)}</div>`:''}
+    ${inBooking?`<div class="quote" style="flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap"><span><b>${TYPES[bk.type].name} · <span class="mono">${bk.roomNo}</span></b><br><span class="muted" style="font-size:.86rem">${fmt(bk.ci)} – ${fmt(bk.co)} · ${peso(quote(bk.type,bk.ci,bk.co,bk.promo).total)}</span></span><button class="btn btn-ghost btn-sm" data-act="bk-resume">Back to booking</button></div>`:''}
+    <form data-form="${login?'login':'register'}" style="display:flex;flex-direction:column;gap:14px">
+      ${login?'':`<label class="field">Full name<input id="a-name" name="name" required autocomplete="name" value="${esc(pre.name||'')}"></label><label class="field">Mobile number<input id="a-phone" name="phone" required placeholder="0917 123 4567" autocomplete="tel" value="${esc(pre.phone||'')}"></label>`}
+      <label class="field">Email<input id="a-email" name="email" type="email" required autocomplete="email" value="${esc(pre.email||'')}"></label>
+      <label class="field">Password<input id="a-pw" name="pw" type="password" required minlength="6" autocomplete="${login?'current-password':'new-password'}" placeholder="${login?'':'At least 6 characters'}"></label>
+      <div class="err" id="a-err"></div>
+      <button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">${login?(inBooking?'Sign in and continue to payment':'Sign in'):(inBooking?'Create account and continue to payment':'Create account')}</button>
+      ${login?'<p class="muted" style="font-size:.85rem;text-align:center">Demo guest: guest@allium.ph / guest123</p>':''}
+    </form>`);
+}
+function afterLogin(){closeModal();renderAcct();route();if(afterAuth){const f=afterAuth;afterAuth=null;f()}}
+
+/* ====== Room details ====== */
+function roomDetail(k){
+  const t=TYPES[k];
+  openModal(t.name,`
+    ${carousel(k,'big')}
+    <div class="thumbs">${t.imgs.map((id,i)=>`<button data-act="car-go" data-i="${i}" aria-label="Show photo ${i+1}">${pic(id,'',  '',300)}</button>`).join('')}</div>
+    <div class="tcard-top"><div class="specs"><span>${t.size}</span><span>${t.bed}</span><span>Up to ${t.cap} guests</span><span>${t.view}</span></div><div class="rate num">${peso(t.rate)}<small> / night</small></div></div>
+    <p>${t.blurb}</p>
+    <ul class="amen-list">${t.amen.map(a=>`<li>${a}</li>`).join('')}</ul>
+    <div class="bk-foot"><span class="muted" style="font-size:.88rem">${freeRooms(k,TODAY,addDays(TODAY,1)).length} free tonight · no account needed to book</span><button class="btn btn-primary" data-act="book" data-type="${k}">Book ${t.short}</button></div>`,{wide:true});
+}
+
+/* ====== Booking flow ====== */
+let bk=null;
+function openBooking(pre={}){
+  const staff=!!pre.staff, u=staff?null:user();
+  bk={step:1,staff,type:pre.type||(search.type!=='any'?search.type:'deluxe'),roomNo:pre.room||null,ci:search.ci,co:search.co,guests:search.guests,promo:'',
+    name:u?u.name:'',email:u?u.email:'',phone:u?u.phone:'',requests:'',method:staff?'cash':'gcash',plan:'deposit',ref:'',card:'',early:''};
+  if(nightsOf(bk.ci,bk.co)<1) bk.co=addDays(bk.ci,1);
+  if(bk.guests>TYPES[bk.type].cap) bk.guests=TYPES[bk.type].cap;
+  renderBk();
+}
+function stepsBar(){const n=['Stay','Guest',bk.staff||user()?'Payment':'Sign in & pay','Confirmed'];return `<div class="steps">${n.map((s,i)=>`<span class="${i+1===bk.step?'on':i+1<bk.step?'done':''}"><i>${i+1<bk.step?'✓':i+1}</i>${s}</span>`).join('')}</div>`}
+function bkGrand(){return quote(bk.type,bk.ci,bk.co,bk.promo).total+(bk.early?earlyFee(bk.type,bk.early):0)}
+function quotePanel(){
+  const t=TYPES[bk.type],q=quote(bk.type,bk.ci,bk.co,bk.promo);
+  return `${pic(t.imgs[0],t.name,'',600)}<div><h4>${t.name}${bk.roomNo?` · <span class="mono">${bk.roomNo}</span>`:''}</h4><div class="muted" style="font-size:.86rem">${q.n>0?`${fmt(bk.ci)} – ${fmt(bk.co)}`:'Choose dates'} · ${bk.guests} guest(s)</div></div>
+  <div class="ql"><span>${peso(q.rate)} × ${q.n} night${q.n===1?'':'s'}</span><span class="num">${peso(q.sub)}</span></div>
+  ${q.disc?`<div class="ql" style="color:var(--ok)"><span>${q.promoLabel}</span><span class="num">−${peso(q.disc)}</span></div>`:''}
+  <div class="ql muted"><span>Service charge 10%</span><span class="num">${peso(q.svc)}</span></div>
+  <div class="ql muted"><span>VAT 12%</span><span class="num">${peso(q.vat)}</span></div>
+  ${bk.early?`<div class="ql"><span>Early check-in, ${EARLY.find(e=>e.k===bk.early).t}</span><span class="num">${peso(earlyFee(bk.type,bk.early))}</span></div>`:''}
+  <div class="ql tot"><span>Total</span><span class="num">${peso(bkGrand())}</span></div>
+  <div class="ql muted" style="font-size:.82rem"><span>30% deposit to confirm</span><span class="num">${peso(Math.round(bkGrand()*DEPOSIT))}</span></div>`;
+}
+function roomChips(){
+  const n=nightsOf(bk.ci,bk.co); if(n<1) return '<span class="muted">Pick valid dates first.</span>';
+  const free=freeRooms(bk.type,bk.ci,bk.co);
+  if(!free.includes(bk.roomNo)) bk.roomNo=free[0]||null;
+  if(!free.length) return `<span style="color:var(--bad)">${TYPES[bk.type].short} is fully booked for these dates. Try another type or date.</span>`;
+  return ROOMS.filter(r=>r.type===bk.type).map(r=>{const ok=free.includes(r.no);return `<button type="button" class="chip ${bk.roomNo===r.no?'on':''}" ${ok?`data-act="bk-room" data-room="${r.no}"`:'disabled'}>${r.no}</button>`}).join('');
+}
+function bkSide(){const c=$('#bk-rooms');if(c)c.innerHTML=roomChips();if(bk.early&&bk.roomNo&&!earlyOk(bk.roomNo,bk.ci))bk.early='';const ew=$('#bk-early');if(ew)ew.innerHTML=earlySeg(bk.type,bk.roomNo,bk.ci,bk.early,null,'bk-early');const q=$('#bk-quote');if(q)q.innerHTML=quotePanel()}
+function pmFields(){
+  if(bk.method==='card') return `<div class="row"><label class="field">Card number<input id="p-card" data-bk="card" inputmode="numeric" placeholder="4111 1111 1111 1111" value="${esc(bk.card)}"></label><label class="field">Expiry<input id="p-exp" data-bk="exp" placeholder="MM/YY" value="${esc(bk.exp||'')}"></label><label class="field">CVV<input id="p-cvv" data-bk="cvv" inputmode="numeric" maxlength="4" placeholder="123" value="${esc(bk.cvv||'')}"></label></div><p class="muted" style="font-size:.82rem">Demo only. Only the last four digits are kept.</p>`;
+  if(bk.method==='gcash'||bk.method==='maya') return `<label class="field">${METHODS[bk.method]} reference number<input id="p-ref" data-bk="ref" placeholder="13-digit reference" value="${esc(bk.ref)}"></label><p class="muted" style="font-size:.82rem">Send to Allium Tagaytay, <span class="mono">0917 413 2026</span>, then enter the reference number.</p>`;
+  if(bk.method==='hotel') return `<div class="hint">Your room is held until 6:00 PM on arrival day. The full amount is settled at the front desk.</div>`;
+  return `<label class="field">Reference / OR number<input id="p-ref" data-bk="ref" placeholder="Optional" value="${esc(bk.ref)}"></label>`;
+}
+function renderBk(){
+  const title=bk.staff?'New reservation (front desk)':'Reserve your stay';
+  let body=stepsBar();
+  if(bk.step===1){
+    body+=`<div class="bk-grid"><div class="bk-main">
+      <div class="row"><label class="field">Check-in<input type="date" id="bk-ci" data-bk="ci" value="${bk.ci}" min="${bk.staff?addDays(TODAY,-1):TODAY}"></label>
+      <label class="field">Check-out<input type="date" id="bk-co" data-bk="co" value="${bk.co}" min="${addDays(bk.ci,1)}"></label>
+      <label class="field">Guests<select id="bk-g" data-bk="guests">${[1,2,3,4].map(n=>`<option ${n==bk.guests?'selected':''}>${n}</option>`).join('')}</select></label></div>
+      <div class="field">Room type<div class="seg" id="bk-types">${Object.entries(TYPES).map(([k,t])=>`<button type="button" class="${bk.type===k?'on':''}" data-act="bk-type" data-type="${k}">${t.short} · ${peso(t.rate)}</button>`).join('')}</div></div>
+      <div class="field">Choose your room<div class="chips" id="bk-rooms">${roomChips()}</div></div>
+      <div class="field">Arrival time<div id="bk-early">${earlySeg(bk.type,bk.roomNo,bk.ci,bk.early,null,'bk-early')}</div></div>
+      <label class="field">Promo code<input id="bk-promo" data-bk="promo" placeholder="Try TAGAYTAY10" value="${esc(bk.promo)}"></label>
+      <div class="err" id="bk-err"></div>
+    </div><aside class="quote" id="bk-quote">${quotePanel()}</aside></div>
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="close">Cancel</button><button class="btn btn-primary" data-act="bk-next">Continue to guest details</button></div>`;
+  } else if(bk.step===2){
+    body+=`<div class="bk-grid"><div class="bk-main">
+      <div class="row"><label class="field">Full name<input id="bk-name" data-bk="name" value="${esc(bk.name)}" autocomplete="name"></label><label class="field">Mobile number<input id="bk-phone" data-bk="phone" value="${esc(bk.phone)}" autocomplete="tel"></label></div>
+      <label class="field">Email<input id="bk-email" data-bk="email" type="email" value="${esc(bk.email)}" autocomplete="email"></label>
+      <label class="field">Special requests<textarea id="bk-req" data-bk="requests" placeholder="Early check-in, extra bed, celebration setup…">${esc(bk.requests)}</textarea></label>
+      ${!bk.staff&&!user()?'<div class="hint">You can browse and fill this in without an account. You’ll sign in or create one on the next step, right before paying.</div>':''}
+      <div class="err" id="bk-err"></div>
+    </div><aside class="quote" id="bk-quote">${quotePanel()}</aside></div>
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="bk-back">Back</button><button class="btn btn-primary" data-act="bk-next">${!bk.staff&&!user()?'Sign in to pay':'Continue to payment'}</button></div>`;
+  } else if(bk.step===3){
+    const q=quote(bk.type,bk.ci,bk.co,bk.promo), ms=bk.staff?['cash','card','gcash','bank']:['gcash','maya','card','hotel'];
+    body+=`<div class="bk-grid"><div class="bk-main">
+      <div class="field">Payment method<div class="pm">${ms.map(m=>`<label><input type="radio" name="pm" value="${m}" data-bk="method" ${bk.method===m?'checked':''}><b>${METHODS[m]}</b><small>${{gcash:'E-wallet',maya:'E-wallet',card:'Visa, Mastercard, JCB',hotel:'Settle on arrival',cash:'At the front desk',bank:'BDO / BPI'}[m]}</small></label>`).join('')}</div></div>
+      <div class="field" id="plan-wrap" ${bk.method==='hotel'?'hidden':''}>Amount to pay now<div class="pm">
+        <label><input type="radio" name="plan" value="deposit" data-bk="plan" ${bk.plan==='deposit'?'checked':''}><b class="num">${peso(Math.round(bkGrand()*DEPOSIT))}</b><small>30% deposit, rest at check-out</small></label>
+        <label><input type="radio" name="plan" value="full" data-bk="plan" ${bk.plan==='full'?'checked':''}><b class="num">${peso(bkGrand())}</b><small>Pay in full now</small></label></div></div>
+      <div id="pm-fields" style="display:flex;flex-direction:column;gap:10px">${pmFields()}</div>
+      <p class="muted" style="font-size:.84rem">Free cancellation until 48 hours before check-in. After that, one night's rate is charged.</p>
+      <div class="err" id="bk-err"></div>
+    </div><aside class="quote" id="bk-quote">${quotePanel()}</aside></div>
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="bk-back">Back</button><button class="btn btn-primary" data-act="bk-confirm">Confirm reservation</button></div>`;
+  } else {
+    const r=db.res.find(x=>x.id===bk.doneId);
+    body+=`<div style="text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;animation:rise .6s var(--ease)">${logo(52)}<h2>You're booked.</h2><p class="muted">A copy of this receipt is saved under My Bookings.</p></div>${receiptHTML(r)}
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="copy-receipt" data-id="${r.id}">Copy receipt</button><button class="btn btn-primary" data-act="${bk.staff?'close':'done-bk'}">${bk.staff?'Back to console':'Go to My Bookings'}</button></div>`;
+  }
+  openModal(title,body,{wide:true});
+}
+function bkValidate(){
+  const n=nightsOf(bk.ci,bk.co), t=TYPES[bk.type];
+  if(bk.step===1){
+    if(!bk.staff&&bk.ci<TODAY) return 'Check-in can’t be in the past.';
+    if(n<1) return 'Check-out must be at least one night after check-in.';
+    if(n>30) return 'Online bookings are limited to 30 nights. Call us for longer stays.';
+    if(bk.guests>t.cap) return `${t.name} sleeps up to ${t.cap}. Choose a larger room type or fewer guests.`;
+    if(!bk.roomNo) return 'No room of this type is free for those dates.';
+    if(bk.promo&&!quote(bk.type,bk.ci,bk.co,bk.promo).disc) return 'That promo code isn’t valid for this stay. Clear it or try another.';
+  }
+  if(bk.step===2){
+    if(bk.name.trim().length<2) return 'Enter the guest’s full name.';
+    if(!/^\S+@\S+\.\S+$/.test(bk.email)) return 'Enter a valid email so we can send the receipt.';
+    if(bk.phone.replace(/\D/g,'').length<10) return 'Enter a mobile number with at least 10 digits.';
+  }
+  if(bk.step===3){
+    if(bk.method==='card'){
+      if(bk.card.replace(/\D/g,'').length<12) return 'Enter the full card number.';
+      const m=/^(\d{2})\/(\d{2})$/.exec((bk.exp||'').trim()); if(!m||+m[1]<1||+m[1]>12) return 'Enter the card expiry as MM/YY.';
+      if(new Date(2000+ +m[2],+m[1],1)<=new Date()) return 'That card has expired. Use another card.';
+      if(!/^\d{3,4}$/.test(bk.cvv||'')) return 'Enter the 3- or 4-digit CVV on the back of the card.';
+    }
+    if((bk.method==='gcash'||bk.method==='maya')&&bk.ref.replace(/\D/g,'').length<6) return `Enter the ${METHODS[bk.method]} reference number.`;
+  }
+  return '';
+}
+function bkConfirm(){
+  const e=bkValidate(); if(e){$('#bk-err').textContent=e;return}
+  if(!bk.staff&&!user()){bk.step=2;ACT['bk-next']();return}
+  if(!roomFree(bk.roomNo,bk.ci,bk.co)){$('#bk-err').textContent='Someone just took that room. Go back and pick another.';return}
+  const q=quote(bk.type,bk.ci,bk.co,bk.promo);
+  if(bk.early&&!earlyOk(bk.roomNo,bk.ci))bk.early='';
+  const G=bkGrand(), amt=bk.method==='hotel'?0:bk.plan==='full'?G:Math.round(G*DEPOSIT);
+  const u=user();
+  const r={id:rid('ALM-'),userId:bk.staff?(db.users.find(x=>x.email.toLowerCase()===bk.email.toLowerCase())?.id||null):u.id,
+    guest:{name:bk.name.trim(),email:bk.email.trim(),phone:bk.phone.trim()},roomNo:bk.roomNo,type:bk.type,checkIn:bk.ci,checkOut:bk.co,guests:bk.guests,
+    status:'confirmed',total:q.total,quote:q,promo:q.disc?bk.promo.toUpperCase():'',requests:bk.requests.trim(),createdAt:stamp(),fee:0,
+    payments:amt?[{amt,method:bk.method,at:TODAY,ref:bk.method==='card'?'Card •••• '+bk.card.replace(/\D/g,'').slice(-4):(bk.ref||rid('PAY-',6))}]:[],
+    history:[{at:TODAY,what:bk.staff?'Created at front desk':'Reservation created online'}],extras:[]};
+  if(bk.early)setEarly(r,bk.early);
+  db.res.push(r); save(); bk.doneId=r.id; bk.step=4; renderBk(); toast(`Reservation ${r.id} confirmed`);
+  if(ui.view!=='home') route();
+}
+
+/* ====== Receipt ====== */
+function receiptHTML(r){
+  const t=TYPES[r.type],q=r.quote,paid=paidOf(r),bal=balOf(r);
+  return `<div class="rcpt">
+    <div class="rcpt-h"><div class="brand">${wordmark()}</div><div style="text-align:right"><div class="eyebrow">Reservation receipt</div><div class="rcpt-ref">${r.id}</div><div class="muted" style="font-size:.8rem">Issued ${fmt(r.createdAt.slice(0,10))}</div></div></div>
+    <div class="kv">
+      <div><span>Guest</span>${esc(r.guest.name)}</div><div><span>Contact</span>${esc(r.guest.phone)}<br><span style="text-transform:none;letter-spacing:0;font-size:.85rem">${esc(r.guest.email)}</span></div>
+      <div><span>Room</span>${t.name} · <span class="mono">${r.roomNo}</span></div><div><span>Status</span>${pill(r.status)}</div>
+      <div><span>Check-in</span>${fmt(r.checkIn)}, ${earlyOf(r)?EARLY.find(e=>e.k===earlyOf(r).k).t+' (early)':'2:00 PM'}</div><div><span>Check-out</span>${fmt(r.checkOut)}, 12:00 NN</div>
+      <div><span>Guests</span>${r.guests}</div><div><span>Nights</span>${q.n}</div>
+    </div>
+    ${r.requests?`<div class="muted" style="font-size:.88rem">Requests: ${esc(r.requests)}</div>`:''}
+    <div class="lines">
+      <div class="ql"><span>${peso(q.rate)} × ${q.n} night(s)</span><span class="num">${peso(q.sub)}</span></div>
+      ${q.disc?`<div class="ql"><span>${q.promoLabel}</span><span class="num">−${peso(q.disc)}</span></div>`:''}
+      <div class="ql"><span>Service charge 10%</span><span class="num">${peso(q.svc)}</span></div>
+      <div class="ql"><span>VAT 12%</span><span class="num">${peso(q.vat)}</span></div>
+      ${r.status!=='cancelled'?(r.extras||[]).map(x=>`<div class="ql"><span>${esc(x.label)}</span><span class="num">${peso(x.amt)}</span></div>`).join(''):''}
+      ${r.fee?`<div class="ql"><span>Late cancellation fee</span><span class="num">${peso(r.fee)}</span></div>`:''}
+      <div class="ql tot"><span>Total</span><span class="num">${peso(grandOf(r))}</span></div>
+      ${r.payments.map(p=>`<div class="ql muted"><span>Paid ${fmt(p.at)} · ${METHODS[p.method]||p.method} · <span class="mono">${esc(p.ref)}</span></span><span class="num">${p.amt<0?'−':''}${peso(Math.abs(p.amt))}</span></div>`).join('')}
+      <div class="ql tot"><span>${r.status==='cancelled'?'Refund due':'Balance due'}</span><span class="num" style="color:${bal>0?'var(--warn)':'var(--ok)'}">${r.status==='cancelled'?peso(Math.max(0,paid-(r.fee||0))):peso(bal)}</span></div>
+    </div>
+    <p class="muted" style="font-size:.8rem">Present this reference at the front desk. Free cancellation until 48 hours before check-in. Allium Tagaytay, Aguinaldo Highway, Tagaytay City.</p>
+  </div>`;
+}
+function receiptText(r){const q=r.quote;return `ALLIUM TAGAYTAY — Reservation Receipt\nRef: ${r.id}\nGuest: ${r.guest.name} (${r.guest.email}, ${r.guest.phone})\nRoom: ${TYPES[r.type].name} ${r.roomNo}\nStay: ${fmt(r.checkIn)} to ${fmt(r.checkOut)} (${q.n} nights), ${r.guests} guest(s)\nStatus: ${label(r.status)}\nRoom: ${peso(q.sub)}${q.disc?`\nDiscount: -${peso(q.disc)}`:''}\nService charge: ${peso(q.svc)}\nVAT: ${peso(q.vat)}${(r.extras||[]).map(x=>`\n${x.label}: ${peso(x.amt)}`).join('')}\nTotal: ${peso(grandOf(r))}\nPaid: ${peso(paidOf(r))}\nBalance: ${peso(balOf(r))}`}
+async function copyText(s){try{await navigator.clipboard.writeText(s);toast('Copied to clipboard')}catch(e){openModal('Copy this text',`<textarea class="mono" style="width:100%;min-height:260px" id="cpy">${esc(s)}</textarea>`);setTimeout(()=>$('#cpy')?.select(),80)}}
+
+/* ====== Modify / cancel / pay ====== */
+let md=null;
+function modifyModal(r){
+  md={id:r.id,ci:r.checkIn,co:r.checkOut,guests:r.guests,type:r.type};
+  const body=`<div class="row"><label class="field">Check-in<input type="date" id="m-ci" data-md="ci" value="${md.ci}" min="${TODAY}"></label><label class="field">Check-out<input type="date" id="m-co" data-md="co" value="${md.co}"></label><label class="field">Guests<select id="m-g" data-md="guests">${[1,2,3,4].map(n=>`<option ${n==md.guests?'selected':''}>${n}</option>`).join('')}</select></label></div>
+    <div class="field">Room type<div class="seg" id="m-types">${Object.entries(TYPES).map(([k,t])=>`<button type="button" class="${md.type===k?'on':''}" data-act="md-type" data-type="${k}">${t.short}</button>`).join('')}</div></div>
+    <div id="m-sum"></div>
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="close">Keep current booking</button><button class="btn btn-primary" data-act="md-save">Save changes</button></div>`;
+  openModal(`Modify ${r.id}`,body); mdSum();
+}
+function mdPlan(){
+  const r=db.res.find(x=>x.id===md.id), n=nightsOf(md.ci,md.co);
+  if(n<1) return {err:'Check-out must be after check-in.'};
+  if(md.guests>TYPES[md.type].cap) return {err:`${TYPES[md.type].name} sleeps up to ${TYPES[md.type].cap}.`};
+  let room=(md.type===r.type&&roomFree(r.roomNo,md.ci,md.co,r.id))?r.roomNo:freeRooms(md.type,md.ci,md.co,r.id)[0];
+  if(!room) return {err:`No ${TYPES[md.type].short} room is free for those dates.`};
+  const q=quote(md.type,md.ci,md.co,r.promo); return {room,q,diff:q.total-r.total,r};
+}
+function mdSum(){
+  const p=mdPlan(), el=$('#m-sum'); if(!el) return;
+  if(p.err){el.innerHTML=`<div class="err">${p.err}</div>`;return}
+  el.innerHTML=`<div class="quote"><div class="ql"><span>New room</span><span class="mono">${p.room}${p.room!==p.r.roomNo?' (reassigned)':''}</span></div><div class="ql"><span>${p.q.n} night(s), taxes included</span><span class="num">${peso(p.q.total)}</span></div><div class="ql"><span>Previous total</span><span class="num">${peso(p.r.total)}</span></div><div class="ql tot"><span>${p.diff>=0?'Added to balance':'Credit back to you'}</span><span class="num">${peso(Math.abs(p.diff))}</span></div></div>`;
+}
+function mdSave(){
+  const p=mdPlan(); if(p.err){toast(p.err,'bad');return}
+  const r=p.r, before=`${r.roomNo} ${fmtShort(r.checkIn)}–${fmtShort(r.checkOut)}`;
+  Object.assign(r,{checkIn:md.ci,checkOut:md.co,guests:md.guests,type:md.type,roomNo:p.room,total:p.q.total,quote:p.q});
+  r.history.push({at:TODAY,what:`Modified from ${before} to ${r.roomNo} ${fmtShort(r.checkIn)}–${fmtShort(r.checkOut)}`});
+  const ek=earlyOf(r)?.k; if(ek){if(earlyOk(r.roomNo,r.checkIn,r.id))setEarly(r,ek);else{setEarly(r,'');toast('Early check-in was removed: the new room isn’t free that morning','bad')}}
+  db.signups.filter(x=>x.resId===r.id&&x.status==='going').forEach(x=>{const e=evById(x.eventId)||x.snap;if(e.date<r.checkIn||e.date>r.checkOut){x.status='cancelled';r.extras=r.extras.filter(y=>y.ref!==x.id)}});
+  save(); closeModal(); route(); toast('Booking updated');
+}
+function cancelRes(r){
+  const hrs=(utc(r.checkIn)+14*3600e3-Date.now())/3600e3, late=hrs<48;
+  confirmBox(`Cancel ${r.id}?`,late?`Check-in is less than 48 hours away, so one night (${peso(r.quote.rate)}) is charged. Anything paid above that is refunded.`:`This is free. Any amount you paid (${peso(paidOf(r))}) will be refunded within 5–7 banking days.`,'Cancel reservation',()=>{
+    r.status='cancelled'; r.fee=late?r.quote.rate:0; db.signups.filter(x=>x.resId===r.id).forEach(x=>x.status='cancelled'); r.history.push({at:TODAY,what:'Cancelled'+(late?' (late, one night charged)':'')});
+    save(); closeModal(); route(); toast(`${r.id} cancelled`);
+  });
+}
+function payModal(r,{checkout=false}={}){
+  const bal=balOf(r);
+  openModal(checkout?'Settle and check out':'Pay balance',`<div class="quote"><div class="ql"><span>${r.id} · ${r.guest.name}</span><span class="mono">${r.roomNo}</span></div><div class="ql tot"><span>Balance due</span><span class="num">${peso(bal)}</span></div></div>
+    <form data-form="pay" data-id="${r.id}" data-co="${checkout?1:''}" style="display:flex;flex-direction:column;gap:14px">
+      <div class="row"><label class="field">Amount<input id="pay-amt" name="amt" type="number" min="1" max="${bal}" value="${bal}" required></label>
+      <label class="field">Method<select id="pay-m" name="method">${(db.session.staff?['cash','card','gcash','maya','bank']:['gcash','maya','card']).map(m=>`<option value="${m}">${METHODS[m]}</option>`).join('')}</select></label></div>
+      <label class="field">Reference<input id="pay-ref" name="ref" placeholder="Reference or OR number"></label>
+      <button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">${checkout?'Record payment and check out':'Record payment'}</button></form>`);
+}
+function profileModal(u){
+  openModal('My details',`<form data-form="profile" style="display:flex;flex-direction:column;gap:14px">
+    <label class="field">Full name<input id="pf-name" name="name" value="${esc(u.name)}" required></label>
+    <label class="field">Mobile number<input id="pf-phone" name="phone" value="${esc(u.phone)}" required></label>
+    <label class="field">Email<input id="pf-email" name="email" type="email" value="${esc(u.email)}" required></label>
+    <div class="err" id="pf-err"></div><button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">Save details</button></form>`);
+}
+
+/* ====== Staff console ====== */
+function vStaff(){
+  if(!db.session.staff) return `<section><div class="wrap" style="max-width:520px"><div class="panel" style="display:flex;flex-direction:column;gap:14px">
+    <div class="brand">${wordmark()}</div><div><div class="eyebrow">Staff console</div><h2>Front desk sign-in</h2></div>
+    <form data-form="staff" style="display:flex;flex-direction:column;gap:14px">
+      <label class="field">Staff ID<input id="st-id" name="id" required autocomplete="username"></label>
+      <label class="field">Password<input id="st-pw" name="pw" type="password" required autocomplete="current-password"></label>
+      <div class="err" id="st-err"></div><button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">Open console</button></form>
+    <div class="hint">Demo staff account: <span class="mono">frontdesk</span> / <span class="mono">allium2026</span></div></div></div></section>`;
+  const tabs=[['overview','Overview'],['rooms','Rooms'],['reservations','Reservations'],['guests','Guests'],['activities','Activities'],['payments','Payments'],['reports','Reports']];
+  return `<section style="padding-top:34px"><div class="wrap">
+    <div class="adm-head"><div><div class="eyebrow">Staff console · ${fmt(TODAY,{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div><h2>Front desk</h2></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost" data-act="reset">Reset sample data</button><button class="btn btn-primary" data-act="walkin">New reservation</button></div></div>
+    <div class="tabs" style="margin-bottom:22px">${tabs.map(([k,l])=>`<button class="${ui.admTab===k?'on':''}" data-act="atab" data-tab="${k}">${l}</button>`).join('')}</div>
+    <div id="adm" class="view">${admTab()}</div>
+    ${db.sample?'<p class="muted" style="font-size:.82rem;margin-top:16px">Showing sample reservations and guests so the console has something to work with. Reset restores them.</p>':''}
+  </div></section>`;
+}
+function admTab(){return ({overview:aOverview,rooms:aRooms,reservations:aRes,guests:aGuests,activities:aActs,payments:aPayments,reports:aReports})[ui.admTab]()}
+function legend(){return `<div class="legend">${['available','reserved','occupied','maintenance'].map(pill).join('')}</div>`}
+function aOverview(){
+  const st=ROOMS.map(r=>roomStatus(r.no)), sellable=ROOMS.length-Object.keys(db.oos).length;
+  const occ=st.filter(s=>s==='occupied'||s==='reserved').length;
+  const arr=db.res.filter(r=>r.status==='confirmed'&&r.checkIn<=TODAY);
+  const dep=db.res.filter(r=>r.status==='checked-in'&&r.checkOut<=TODAY);
+  const inHouse=db.res.filter(r=>r.status==='checked-in');
+  const mo=TODAY.slice(0,7), coll=db.res.flatMap(r=>r.payments).filter(p=>p.at.slice(0,7)===mo).reduce((s,p)=>s+p.amt,0);
+  const outstanding=db.res.filter(active).reduce((s,r)=>s+balOf(r),0);
+  return `<div class="kpis">
+    <div class="kpi"><span>Occupancy tonight</span><b>${Math.round(occ/sellable*100)}%</b><small>${occ} of ${sellable} sellable rooms</small></div>
+    <div class="kpi"><span>In-house guests</span><b>${inHouse.reduce((s,r)=>s+r.guests,0)}</b><small>${inHouse.length} rooms occupied</small></div>
+    <div class="kpi"><span>Arrivals due</span><b>${arr.length}</b><small>Waiting to check in</small></div>
+    <div class="kpi"><span>Departures due</span><b>${dep.length}</b><small>Checking out today</small></div>
+    <div class="kpi"><span>Collected this month</span><b>${peso(coll)}</b><small>${peso(outstanding)} still outstanding</small></div>
+  </div>
+  <div class="panel"><div class="tcard-top"><h3>Room board</h3><span class="muted" style="font-size:.85rem">Tap a room for details</span></div>${legend()}
+    <div class="board" style="margin-top:14px">${ROOMS.map((r,i)=>{const s=st[i],res=resOnRoom(r.no);return `<button class="tile t-${s}" data-act="room-card" data-room="${r.no}"><b>${r.no}</b><small>${TYPES[r.type].short}</small><small>${s==='maintenance'?'Out of service':res?esc(res.guest.name.split(' ').slice(-1)[0]):'Ready'}</small></button>`}).join('')}</div></div>
+  <div class="cols2">
+    <div class="panel"><h3 style="margin-bottom:8px">Arrivals</h3><div class="list">${arr.length?arr.map(r=>`<div class="li"><div><b>${esc(r.guest.name)}</b><div class="muted" style="font-size:.84rem"><span class="mono">${r.roomNo}</span> · ${r.guests} guest(s) · until ${fmtShort(r.checkOut)}${earlyOf(r)?` · <span style="color:var(--gold-ink)">early ${EARLY.find(e=>e.k===earlyOf(r).k).t}</span>`:''}${r.checkIn<TODAY?' · <span style="color:var(--bad)">overdue</span>':''}</div></div><button class="btn btn-primary btn-sm" data-act="checkin" data-id="${r.id}">Check in</button></div>`).join(''):'<p class="muted">No arrivals waiting.</p>'}</div></div>
+    <div class="panel"><h3 style="margin-bottom:8px">Departures</h3><div class="list">${dep.length?dep.map(r=>`<div class="li"><div><b>${esc(r.guest.name)}</b><div class="muted" style="font-size:.84rem"><span class="mono">${r.roomNo}</span> · balance ${peso(balOf(r))}</div></div><button class="btn btn-gold btn-sm" data-act="checkout" data-id="${r.id}">Check out</button></div>`).join(''):'<p class="muted">No departures due today.</p>'}</div></div>
+  </div>`;
+}
+function aRooms(){
+  return `${legend()}<div class="tw" style="margin-top:12px"><table class="t"><thead><tr><th>Room</th><th>Type</th><th>Status</th><th>Current guest</th><th>Next arrival</th><th>Note</th><th></th></tr></thead><tbody>
+  ${ROOMS.map(r=>{const s=roomStatus(r.no),cur=resOnRoom(r.no),nx=nextArrival(r.no);return `<tr><td class="mono">${r.no}</td><td>${TYPES[r.type].short}</td><td>${pill(s)}</td><td>${cur?`<a href="#" data-act="res" data-id="${cur.id}">${esc(cur.guest.name)}</a>`:'<span class="muted">—</span>'}</td><td>${nx?`${fmtShort(nx.checkIn)} · ${esc(nx.guest.name)}`:'<span class="muted">—</span>'}</td><td class="muted">${esc(db.oos[r.no]||'')}</td>
+  <td class="r">${db.oos[r.no]?`<button class="btn btn-ghost btn-sm" data-act="svc-on" data-room="${r.no}">Return to service</button>`:`<button class="btn btn-ghost btn-sm" data-act="svc-off" data-room="${r.no}" ${cur?'disabled title="Room has a guest"':''}>Take out of service</button>`}</td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+function resRows(list){return list.map(r=>`<tr><td><a href="#" class="mono" data-act="res" data-id="${r.id}">${r.id}</a></td><td>${esc(r.guest.name)}</td><td class="mono">${r.roomNo}</td><td>${fmtShort(r.checkIn)} – ${fmtShort(r.checkOut)}</td><td>${pill(r.status)}</td><td class="r">${peso(grandOf(r))}</td><td class="r" style="color:${balOf(r)>0?'var(--warn)':'inherit'}">${peso(balOf(r))}</td></tr>`).join('')}
+function aRes(){
+  return `<div class="toolbar"><label class="field">Search<input id="r-q" data-rq="q" placeholder="Name, email, reference or room" value="${esc(ui.resQ)}"></label>
+    <label class="field" style="flex:0 0 200px">Status<select id="r-f" data-rq="f">${['all','confirmed','checked-in','checked-out','cancelled'].map(s=>`<option value="${s}" ${ui.resF===s?'selected':''}>${s==='all'?'All statuses':label(s)}</option>`).join('')}</select></label></div>
+    <div class="tw"><table class="t"><thead><tr><th>Reference</th><th>Guest</th><th>Room</th><th>Stay</th><th>Status</th><th class="r">Total</th><th class="r">Balance</th></tr></thead><tbody id="r-body">${resBody()}</tbody></table></div>`;
+}
+function resBody(){
+  const q=ui.resQ.trim().toLowerCase();
+  const list=db.res.filter(r=>(ui.resF==='all'||r.status===ui.resF)&&(!q||[r.id,r.guest.name,r.guest.email,r.roomNo].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.checkIn<b.checkIn?1:-1);
+  return list.length?resRows(list):`<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">No reservations match. Clear the search or change the status filter.</td></tr>`;
+}
+function guestList(){
+  const m=new Map();
+  db.users.forEach(u=>m.set(u.id,{key:u.id,name:u.name,email:u.email,phone:u.phone,acct:true,stays:0,nights:0,spend:0,last:''}));
+  db.res.forEach(r=>{const k=r.userId||'w:'+r.guest.email.toLowerCase();if(!m.has(k))m.set(k,{key:k,name:r.guest.name,email:r.guest.email,phone:r.guest.phone,acct:false,stays:0,nights:0,spend:0,last:''});
+    const g=m.get(k);if(r.status!=='cancelled'){g.stays++;g.nights+=nightsOf(r.checkIn,r.checkOut);if(r.checkIn>g.last)g.last=r.checkIn}g.spend+=paidOf(r)});
+  return [...m.values()];
+}
+function aGuests(){
+  const gs=guestList().sort((a,b)=>b.spend-a.spend);
+  return `<div class="tw"><table class="t"><thead><tr><th>Guest</th><th>Contact</th><th>Account</th><th class="r">Stays</th><th class="r">Nights</th><th class="r">Paid to date</th><th>Last stay</th><th></th></tr></thead><tbody>
+  ${gs.map(g=>`<tr><td><b>${esc(g.name)}</b></td><td>${esc(g.email)}<br><span class="muted mono">${esc(g.phone)}</span></td><td>${g.acct?'<span class="pill p-available">Online</span>':'<span class="pill p-checked-out">Walk-in</span>'}</td><td class="r">${g.stays}</td><td class="r">${g.nights}</td><td class="r">${peso(g.spend)}</td><td>${g.last?fmt(g.last):'—'}</td><td class="r"><button class="btn btn-ghost btn-sm" data-act="edit-guest" data-key="${esc(g.key)}">Edit</button></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function aPayments(){
+  const ps=db.res.flatMap(r=>r.payments.map(p=>({...p,r}))).sort((a,b)=>a.at<b.at?1:-1);
+  const tot=ps.reduce((s,p)=>s+p.amt,0), byM={};ps.forEach(p=>{const k=METHODS[p.method]||p.method;byM[k]=(byM[k]||0)+p.amt});
+  return `<div class="kpis"><div class="kpi"><span>Total recorded</span><b>${peso(tot)}</b><small>${ps.length} payments</small></div>${Object.entries(byM).map(([k,v])=>`<div class="kpi"><span>${k}</span><b>${peso(v)}</b><small>${Math.round(v/tot*100)}% of total</small></div>`).join('')}</div>
+  <div class="tw"><table class="t"><thead><tr><th>Date</th><th>Reference</th><th>Reservation</th><th>Guest</th><th>Method</th><th class="r">Amount</th></tr></thead><tbody>
+  ${ps.map(p=>`<tr><td>${fmt(p.at)}</td><td class="mono">${esc(p.ref)}</td><td><a href="#" class="mono" data-act="res" data-id="${p.r.id}">${p.r.id}</a></td><td>${esc(p.r.guest.name)}</td><td>${METHODS[p.method]||p.method}</td><td class="r">${peso(p.amt)}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function occChart(){
+  const days=[...Array(14)].map((_,i)=>addDays(TODAY,i-7));
+  const occ=d=>db.res.filter(r=>r.status!=='cancelled'&&r.checkIn<=d&&d<r.checkOut).length;
+  const W=640,H=220,L=30,B=30,T=12,bw=(W-L-10)/14, y=v=>T+(H-T-B)*(1-v/20);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rooms occupied per night, 7 days back to 6 days ahead">`;
+  [0,5,10,15,20].forEach(v=>s+=`<line class="grid" x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`);
+  days.forEach((d,i)=>{const v=occ(d),x=L+i*bw+4,cls=d===TODAY?'today':d>TODAY?'future':'';
+    s+=`<rect class="bar ${cls}" x="${x}" y="${y(v)}" width="${bw-8}" height="${Math.max(0,y(0)-y(v))}" rx="3"><title>${fmt(d)}: ${v} rooms</title></rect><text x="${x+(bw-8)/2}" y="${y(v)-5}" text-anchor="middle">${v}</text><text x="${x+(bw-8)/2}" y="${H-10}" text-anchor="middle">${new Date(utc(d)).getUTCDate()}</text>`});
+  return s+'</svg>';
+}
+function aReports(){
+  const list=db.res.filter(r=>r.checkIn>=ui.repFrom&&r.checkIn<=ui.repTo).sort((a,b)=>a.checkIn<b.checkIn?-1:1);
+  const live=list.filter(r=>r.status!=='cancelled'), nights=live.reduce((s,r)=>s+nightsOf(r.checkIn,r.checkOut),0);
+  const rev=list.reduce((s,r)=>s+grandOf(r),0), room=live.reduce((s,r)=>s+r.quote.sub-r.quote.disc,0);
+  return `<div class="toolbar"><label class="field" style="flex:0 0 180px">Check-ins from<input type="date" id="rp-f" data-rp="repFrom" value="${ui.repFrom}"></label><label class="field" style="flex:0 0 180px">to<input type="date" id="rp-t" data-rp="repTo" value="${ui.repTo}"></label><button class="btn btn-ghost" data-act="csv">Copy as CSV</button></div>
+  <div class="kpis"><div class="kpi"><span>Reservations</span><b>${list.length}</b><small>${list.length-live.length} cancelled</small></div><div class="kpi"><span>Room nights sold</span><b>${nights}</b><small>across ${live.length} stays</small></div><div class="kpi"><span>Booked revenue</span><b>${peso(rev)}</b><small>incl. service charge and VAT</small></div><div class="kpi"><span>Average daily rate</span><b>${peso(nights?room/nights:0)}</b><small>room revenue ÷ nights</small></div></div>
+  <div class="cols2" style="margin-top:0;margin-bottom:22px"><div class="panel chart"><h4 style="margin-bottom:8px">Rooms occupied per night</h4><p class="muted" style="font-size:.82rem;margin-bottom:8px">Past week, today in gold, next six nights lighter.</p>${occChart()}</div>
+    <div class="panel"><h4 style="margin-bottom:8px">By room type</h4><div class="list">${Object.entries(TYPES).map(([k,t])=>{const l=live.filter(r=>r.type===k);return `<div class="li"><div><b>${t.short}</b><div class="muted" style="font-size:.84rem">${l.length} stays · ${l.reduce((s,r)=>s+nightsOf(r.checkIn,r.checkOut),0)} nights</div></div><b class="num">${peso(l.reduce((s,r)=>s+r.total,0))}</b></div>`}).join('')}</div></div></div>
+  <h3 style="margin-bottom:10px">Reservation history</h3>
+  <div class="tw"><table class="t"><thead><tr><th>Reference</th><th>Guest</th><th>Room</th><th>Stay</th><th>Status</th><th class="r">Total</th><th class="r">Balance</th></tr></thead><tbody>${list.length?resRows(list):'<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">No check-ins in this range.</td></tr>'}</tbody></table></div>`;
+}
+function resDetail(r){
+  const can=r.status==='confirmed', inn=r.status==='checked-in';
+  openModal(`${r.id} · ${esc(r.guest.name)}`,`${receiptHTML(r)}
+    <div><h4 style="margin-bottom:6px">Activity</h4><div class="list">${r.history.map(h=>`<div class="li" style="font-size:.88rem"><span>${esc(h.what)}</span><span class="muted">${fmt(h.at.slice(0,10))}</span></div>`).join('')}</div></div>
+    <div class="bk-foot" style="justify-content:flex-start">
+      ${can&&r.checkIn<=TODAY?`<button class="btn btn-primary btn-sm" data-act="checkin" data-id="${r.id}">Check in</button>`:''}
+      ${inn?`<button class="btn btn-gold btn-sm" data-act="checkout" data-id="${r.id}">Check out</button>`:''}
+      ${active(r)&&balOf(r)>0?`<button class="btn btn-ghost btn-sm" data-act="pay" data-id="${r.id}">Record payment</button>`:''}
+      ${can?`<button class="btn btn-ghost btn-sm" data-act="early" data-id="${r.id}">Early check-in</button><button class="btn btn-ghost btn-sm" data-act="modify" data-id="${r.id}">Modify</button><button class="btn btn-danger btn-sm" data-act="cancel" data-id="${r.id}">Cancel</button>`:''}
+      <button class="btn btn-ghost btn-sm" data-act="copy-receipt" data-id="${r.id}">Copy receipt</button>
+    </div>`,{wide:true});
+}
+function roomCard(no){
+  const r=ROOMS.find(x=>x.no===no),s=roomStatus(no),cur=resOnRoom(no),nx=nextArrival(no);
+  openModal(`Room ${no}`,`<div class="tcard-top"><div><h4>${TYPES[r.type].name}</h4><div class="muted" style="font-size:.88rem">${TYPES[r.type].floor} · ${TYPES[r.type].view}</div></div>${pill(s)}</div>
+    ${cur?`<div class="quote"><div class="ql"><span>${cur.status==='checked-in'?'In house':'Arriving'}</span><b>${esc(cur.guest.name)}</b></div><div class="ql muted"><span>${fmt(cur.checkIn)} – ${fmt(cur.checkOut)}</span><span class="mono">${cur.id}</span></div></div>`:''}
+    ${db.oos[no]?`<div class="hint">Out of service: ${esc(db.oos[no])}</div>`:''}
+    <p class="muted" style="font-size:.9rem">Next arrival: ${nx?`${fmt(nx.checkIn)}, ${esc(nx.guest.name)}`:'none scheduled'}</p>
+    <div class="bk-foot" style="justify-content:flex-start">${cur?`<button class="btn btn-primary btn-sm" data-act="res" data-id="${cur.id}">Open reservation</button>`:''}
+    ${db.oos[no]?`<button class="btn btn-ghost btn-sm" data-act="svc-on" data-room="${no}">Return to service</button>`:cur?'':`<button class="btn btn-ghost btn-sm" data-act="svc-off" data-room="${no}">Take out of service</button><button class="btn btn-primary btn-sm" data-act="walkin" data-room="${no}" data-type="${r.type}">Book this room</button>`}</div>`);
+}
+
+/* ====== Extras on the folio (early check-in, activities) ====== */
+const extrasOf=r=>(r.extras||[]).reduce((s,x)=>s+x.amt,0);
+const grandOf=r=>r.status==='cancelled'?(r.fee||0):r.total+(r.fee||0)+extrasOf(r);
+const EARLY=[{k:'',t:'2:00 PM',label:'Standard 2:00 PM',pct:0},{k:'12',t:'12:00 NN',label:'12:00 NN',pct:.2},{k:'10',t:'10:00 AM',label:'10:00 AM',pct:.35},{k:'8',t:'8:00 AM',label:'8:00 AM',pct:.5}];
+const earlyFee=(type,k)=>{const o=EARLY.find(e=>e.k===k);return o&&o.pct?Math.round(TYPES[type].rate*o.pct/50)*50:0};
+const earlyOk=(roomNo,ci,ex)=>!db.res.some(r=>r.id!==ex&&r.roomNo===roomNo&&active(r)&&r.checkOut===ci);
+const earlyOf=r=>(r.extras||[]).find(x=>x.kind==='early');
+function earlySeg(type,roomNo,ci,cur,ex,act){
+  const ok=roomNo?earlyOk(roomNo,ci,ex):true;
+  return `<div class="seg">${EARLY.map(e=>`<button type="button" class="${cur===e.k?'on':''}" data-act="${act}" data-k="${e.k}" ${e.k&&!ok?'disabled':''}>${e.label}${e.k?` · ${peso(earlyFee(type,e.k))}`:''}</button>`).join('')}</div>
+  <small class="muted" style="text-transform:none;letter-spacing:0">${ok?'Early check-in is a one-time fee, VAT and service charge included. Your room is cleaned and ready by the time you pick.':`Room ${roomNo} has a guest checking out that morning, so early arrival isn't possible for it. Pick another room to arrive early.`}</small>`;
+}
+function earlyModal(r){
+  const cur=earlyOf(r)?.k||'';
+  openModal(`Early check-in · ${r.id}`,`<p class="muted">Arriving before 2:00 PM on ${fmt(r.checkIn)}? Choose your time. The fee is added to your folio and paid with your balance.</p>
+    <div class="field" id="ec-wrap">${earlySeg(r.type,r.roomNo,r.checkIn,cur,r.id,'ec-pick')}</div>
+    <div class="bk-foot"><button class="btn btn-ghost" data-act="close">Close</button><button class="btn btn-primary" id="ec-save" data-act="ec-save" data-id="${r.id}" data-k="${cur}">Save arrival time</button></div>`);
+}
+function setEarly(r,k){
+  r.extras=(r.extras||[]).filter(x=>x.kind!=='early');
+  if(k){const o=EARLY.find(e=>e.k===k);r.extras.push({id:rid('X',6),kind:'early',k,label:`Early check-in, ${o.t}`,amt:earlyFee(r.type,k)})}
+}
+
+/* ====== Experiences: Solo Circle, yoga, capybaras ====== */
+const EXP_IMG={
+  yoga:['photo-1758274535230-3641d0632878','photo-1758797315487-b3b225dff7d8','photo-1758274526045-2bd03dcc64d2','photo-1758797316894-c25b94e8426a'],
+  capy:['photo-1716064554838-f9ae49db992b','photo-1700553792546-3fbfc6b6613e','photo-1714622343884-7494d44b30fa','photo-1730700395561-c2af9acb4fe8','photo-1701772164869-dfb2cac483dc'],
+};
+const SOLO=[
+  {key:'bulalo',day:0,time:'18:30',dur:'2 hrs',cap:10,price:900,img:'photo-1539635278303-d4002c07eae3',title:'Solo diners’ bulalo night',where:'Deck bar, long table',blurb:'One long table for anyone traveling alone. Bulalo, sinigang and a round of hot tsokolate, with the volcano lit up across the lake.'},
+  {key:'boat',day:1,time:'07:00',dur:'6 hrs',cap:8,price:2800,img:'photo-1621420561012-1adfa8e6bc2e',title:'Taal Lake boat ride & crater viewpoint',where:'Meet at the lobby',blurb:'Shuttle to Talisay, a banca across the lake, and a guided walk to the Volcano Island viewpoint when PHIVOLCS allows. Packed lunch included.'},
+  {key:'coffee',day:2,time:'09:00',dur:'4 hrs',cap:10,price:1500,img:'photo-1586095516671-d085ff58cdd4',title:'Amadeo coffee farm & barako cupping',where:'Meet at the lobby',blurb:'Pick ripe cherries with a third-generation farmer, then taste barako, liberica and excelsa side by side.'},
+  {key:'hike',day:3,time:'16:00',dur:'2.5 hrs',cap:12,price:600,img:'photo-1629185752152-fe65698ddee4',title:'Ridge sunset walk',where:'Garden gate',blurb:'An easy guided walk along the ridge to a lakeside lookout, back in time for dinner.'},
+  {key:'paint',day:4,time:'15:00',dur:'2 hrs',cap:8,price:800,img:'photo-1705806340826-aeb03876f450',title:'Watercolor on the deck',where:'Viewing deck',blurb:'Paint the volcano with a Cavite artist. All materials provided, and the painting goes home with you.'},
+  {key:'tablea',day:5,time:'14:00',dur:'1.5 hrs',cap:8,price:1200,img:'photo-1521677446241-d182a96ec49f',title:'Tablea chocolate class',where:'Farm kitchen',blurb:'Roast and grind cacao into tablea, then cook champorado together.'},
+];
+const YOGA=[{time:'06:30',title:'Sunrise Ridge Yoga',dur:'45 min',level:'All levels',teacher:'Teacher Bea',img:0},{time:'17:00',title:'Golden Hour Flow',dur:'60 min',level:'Beginner friendly',teacher:'Teacher Paolo',img:1}];
+const CAPY=[{time:'10:00',title:'Capybara Meet & Greet',dur:'30 min'},{time:'15:00',title:'Capybara Meet & Greet',dur:'30 min'}];
+const PARTNER='Kawayan Wildlife Garden';
+const t12=t=>{const[h,m]=t.split(':').map(Number);return `${(h%12)||12}:${pad(m)} ${h<12?'AM':h===12?'NN':'PM'}`};
+function allEvents(){
+  const ev=[];
+  for(let i=0;i<14;i++){const d=addDays(TODAY,i);
+    SOLO.forEach(s=>{if(i%7===s.day)ev.push({id:`${s.key}-${d}`,kind:'solo',date:d,...s,party:false})});
+    if(i<7) YOGA.forEach(y=>ev.push({id:`yoga-${d}-${y.time}`,kind:'yoga',date:d,time:y.time,dur:y.dur,cap:12,price:450,img:EXP_IMG.yoga[(i+y.img)%EXP_IMG.yoga.length],title:y.title,where:'Viewing deck',blurb:`${y.level} with ${y.teacher}. Mats, blocks and blankets provided.`,teacher:y.teacher,party:false}));
+    if(i<7&&new Date(utc(d)).getUTCDay()!==1) CAPY.forEach(c=>ev.push({id:`capy-${d}-${c.time}`,kind:'capy',date:d,time:c.time,dur:c.dur,cap:10,price:650,img:EXP_IMG.capy[i%EXP_IMG.capy.length],title:c.title,where:'Garden lawn',blurb:`Keeper-led visit with the capybara group from ${PARTNER}. Gentle petting and hand-feeding with the greens we provide.`,party:true}));
+  }
+  return ev;
+}
+const evById=id=>allEvents().find(e=>e.id===id);
+const going=id=>db.signups.filter(s=>s.eventId===id&&s.status==='going');
+const spotsTaken=id=>going(id).reduce((n,s)=>n+(s.party||1),0);
+const evPast=e=>e.date<TODAY||(e.date===TODAY&&e.time<=`${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`);
+const priceFor=(e,r,party=1)=>e.kind==='yoga'&&r&&r.type==='vip'?0:e.price*party;
+const staysFor=(u,date)=>u?db.res.filter(r=>r.userId===u.id&&active(r)&&r.checkIn<=date&&date<=r.checkOut):[];
+const mySignup=(e,u)=>u&&db.signups.find(s=>s.eventId===e.id&&s.userId===u.id&&s.status==='going');
+const firstName=n=>esc((n||'').trim().split(/\s+/)[0]||'Guest');
+
+function evCard(e,i=0){
+  const u=user(), mine=mySignup(e,u), left=e.cap-spotsTaken(e.id), past=evPast(e), g=going(e.id);
+  const solo=g.filter(s=>s.solo), others=g.length-solo.length;
+  return `<article class="ev rv" style="--d:${i%4}">
+    <div class="ev-img">${pic(e.img,e.title,'',800)}<span class="ev-date"><b>${new Date(utc(e.date)).getUTCDate()}</b>${new Date(utc(e.date)).toLocaleDateString('en-PH',{month:'short',timeZone:'UTC'})}</span></div>
+    <div class="ev-b">
+      <div class="eyebrow">${fmt(e.date,{weekday:'short',month:'short',day:'numeric'})} · ${t12(e.time)} · ${e.dur}</div>
+      <h4>${e.title}</h4>
+      <p class="muted">${e.blurb}</p>
+      <div class="ev-meta"><span>${esc(e.where)}</span><span class="num">${e.kind==='yoga'?`${peso(e.price)} · free for VIP stays`:`${peso(e.price)}${e.party?' per person':''}`}</span></div>
+      <div class="spots"><i style="width:${Math.min(100,(e.cap-left)/e.cap*100)}%"></i></div>
+      <div class="ev-meta"><span class="num">${left>0?`${left} of ${e.cap} spots left`:'Full'}</span>${e.kind==='solo'?`<span>${g.length} going</span>`:''}</div>
+      ${e.kind==='solo'&&g.length?`<div class="who-list">${solo.slice(0,4).map(s=>`<span class="chipp" title="${esc(s.intro||'')}"><i>${firstName(s.name)[0]}</i>${firstName(s.name)}${s.intro?` · <em>${esc(s.intro)}</em>`:''}</span>`).join('')}${others>0?`<span class="chipp muted">+${others} more</span>`:''}</div>`:''}
+      <div class="ev-act">${past?'<span class="pill p-checked-out">Ended</span>':mine?`<span class="pill p-available">You're going${mine.party>1?` · ${mine.party} people`:''}</span><button class="btn btn-ghost btn-sm" data-act="leave" data-sid="${mine.id}">Leave</button>`:left>0?`<button class="btn btn-primary btn-sm" data-act="join" data-ev="${e.id}">${e.kind==='solo'?'Join the group':'Book a spot'}</button>`:`<button class="btn btn-ghost btn-sm" disabled>Full</button>`}</div>
+    </div></article>`;
+}
+function dayChips(sel,kind){
+  const days=[...Array(7)].map((_,i)=>addDays(TODAY,i)).filter(d=>kind!=='capy'||new Date(utc(d)).getUTCDay()!==1);
+  return `<div class="seg day-chips">${days.map(d=>`<button type="button" class="${sel===d?'on':''}" data-act="exp-day" data-kind="${kind}" data-day="${d}">${d===TODAY?'Today':fmt(d,{weekday:'short',day:'numeric'})}</button>`).join('')}</div>`;
+}
+function vExp(){
+  const tab=ui.expTab||'solo', u=user(), ev=allEvents();
+  ui.yogaDay=ui.yogaDay||TODAY; if(!ui.capyDay) ui.capyDay=new Date(utc(TODAY)).getUTCDay()===1?addDays(TODAY,1):TODAY;
+  let body='';
+  if(tab==='solo'){
+    const list=ev.filter(e=>e.kind==='solo'&&!evPast(e));
+    body=`<div class="split exp-intro">
+      <div class="split-copy">
+        <div class="eyebrow rv">Solo Circle</div><h2 class="rv" style="--d:1">Traveling alone? Join the table.</h2>
+        <p class="muted rv" style="--d:2">Small-group classes and field trips for guests on their own. Pick one, meet at the lobby, and the cost goes on your room folio.</p>
+        <div class="howto rv" style="--d:3">
+          <div><b>Join</b><span>Reserve a spot for any day you're staying with us.</span></div>
+          <div><b>Say hello</b><span>Share a first name and one line, so fellow solo guests know who's coming.</span></div>
+          <div><b>Show up</b><span>A host meets the group 10 minutes before start.</span></div>
+        </div>
+        ${u?`<div class="panel solo-prof rv" style="--d:4"><div><b>Your Solo Circle card</b><div class="muted" style="font-size:.88rem">${u.solo&&u.solo.on?`Shown as <b>${firstName(u.name)}</b>${u.solo.intro?` · “${esc(u.solo.intro)}”`:''}`:'Hidden. Other guests only see a head count.'}</div></div><button class="btn btn-ghost btn-sm" data-act="solo-prof">Edit</button></div>`:`<div class="hint rv" style="--d:4">Browse freely. You'll sign in when you join a group.</div>`}
+      </div>
+      ${pic('photo-1629185752152-fe65698ddee4','Small group walking a ridge trail','tall rv rv-clip',1200)}
+    </div>
+    <h3 style="margin:40px 0 14px">Upcoming groups · next two weeks</h3>
+    <div class="ev-grid">${list.map(evCard).join('')}</div>`;
+  }
+  if(tab==='yoga'){
+    const list=ev.filter(e=>e.kind==='yoga'&&e.date===ui.yogaDay);
+    body=`<div class="split exp-intro">
+      <div class="split-copy"><div class="eyebrow rv">Yoga on the deck</div><h2 class="rv" style="--d:1">Breathe with the volcano in view.</h2>
+        <p class="muted rv" style="--d:2">Two classes every day on the viewing deck. ${peso(450)} per class, charged to your room. Free for guests in a VIP Suite.</p>
+        <div class="howto rv" style="--d:3"><div><b>6:30 AM</b><span>Sunrise Ridge Yoga, 45 minutes, all levels</span></div><div><b>5:00 PM</b><span>Golden Hour Flow, 60 minutes, beginner friendly</span></div><div><b>12 mats</b><span>Per class. Book ahead on weekends.</span></div></div>
+      </div>${pic(EXP_IMG.yoga[0],'Outdoor yoga class at sunset','tall rv rv-clip',1200)}</div>
+    <h3 style="margin:40px 0 12px">Pick a day</h3>${dayChips(ui.yogaDay,'yoga')}
+    <div class="ev-grid two">${list.map(evCard).join('')}</div>`;
+  }
+  if(tab==='capy'){
+    const list=ev.filter(e=>e.kind==='capy'&&e.date===ui.capyDay);
+    body=`<div class="split exp-intro">
+      <div class="split-copy"><div class="eyebrow rv">With ${PARTNER}</div><h2 class="rv" style="--d:1">Meet our capybaras.</h2>
+        <p class="muted rv" style="--d:2">We host a small group of capybaras from our partner zoo, ${PARTNER}, on the garden lawn. Their keepers lead every visit.</p>
+        <ul class="amen-list rv" style="--d:3"><li>30 minutes, keeper-led</li><li>Up to 10 guests per session</li><li>Ages 4+ with an adult</li><li>Feed only the greens we hand you</li><li>Closed Mondays for keeper rest</li><li>${peso(650)} per person</li></ul>
+      </div><div class="rv rv-clip tall-car">${(()=>{const t={name:'Capybara',imgs:EXP_IMG.capy};return `<div class="car" data-car><div class="car-track">${t.imgs.map((id,i)=>pic(id,`Capybara, photo ${i+1}`,'',1200)).join('')}</div><button class="car-btn prev" data-act="car" data-dir="-1" aria-label="Previous photo">‹</button><button class="car-btn next" data-act="car" data-dir="1" aria-label="Next photo">›</button><div class="car-count num">${t.imgs.length} photos</div></div>`})()}</div></div>
+    <h3 style="margin:40px 0 12px">Pick a day</h3>${dayChips(ui.capyDay,'capy')}
+    <div class="ev-grid two">${list.map(evCard).join('')}</div>`;
+  }
+  if(tab==='mine'){
+    if(!u) body=`<div class="panel empty"><h3>Sign in to see your activities</h3><button class="btn btn-primary" data-act="auth">Sign in</button></div>`;
+    else{const mine=db.signups.filter(s=>s.userId===u.id).map(s=>({s,e:evById(s.eventId)||s.snap})).filter(x=>x.e).sort((a,b)=>(a.e.date+a.e.time)<(b.e.date+b.e.time)?-1:1);
+      body=mine.length?`<div class="tw"><table class="t"><thead><tr><th>Activity</th><th>When</th><th>People</th><th>Room folio</th><th>Status</th><th class="r">Charge</th><th></th></tr></thead><tbody>${mine.map(({s,e})=>`<tr><td><b>${esc(e.title)}</b></td><td>${fmt(e.date,{weekday:'short',month:'short',day:'numeric'})}, ${t12(e.time)}</td><td>${s.party||1}</td><td class="mono">${s.resId||'—'}</td><td>${s.status==='going'?(evPast(e)?pill('checked-out'):'<span class="pill p-available">Going</span>'):pill('cancelled')}</td><td class="r">${peso(s.amt||0)}</td><td class="r">${s.status==='going'&&!evPast(e)?`<button class="btn btn-ghost btn-sm" data-act="leave" data-sid="${s.id}">Leave</button>`:''}</td></tr>`).join('')}</tbody></table></div>`
+        :`<div class="panel empty"><p class="muted">You haven't joined anything yet.</p><button class="btn btn-primary" data-act="exp-tab" data-tab="solo">Browse Solo Circle</button></div>`}
+  }
+  const tabs=[['solo','Solo Circle'],['yoga','Yoga classes'],['capy','Capybara meet & greet'],['mine','My activities']];
+  return `<section class="chap hero exp-hero" id="x-top" data-chap="Experiences">
+    ${pic(EXP_IMG.capy[0],'Capybara resting in the grass','hero-ph',2000,true)}
+    <div class="hero-shade"></div>
+    <div class="hero-copy"><div class="wrap stagger">
+      <div class="eyebrow" style="--i:0">Experiences at Allium</div>
+      <h1 style="--i:1">Something to look forward to every day.</h1>
+      <p style="--i:2">Group trips for solo guests, yoga on the deck, and an afternoon with our visiting capybaras.</p>
+      <div class="btns" style="--i:3">${tabs.slice(0,3).map(([k,l])=>`<button class="btn ${k==='solo'?'btn-gold':'btn-glass'}" data-act="exp-tab" data-tab="${k}" data-scroll="1">${l}</button>`).join('')}</div>
+    </div></div>
+    <button class="cue" data-act="chap" data-id="x-body" aria-label="Scroll to next section"><span>Scroll</span><i></i></button>
+  </section>
+  <section id="x-body" style="scroll-margin-top:68px"><div class="wrap">
+    <div class="exp-bar"><div class="tabs exp-tabs">${tabs.map(([k,l])=>`<button class="${tab===k?'on':''}" data-act="exp-tab" data-tab="${k}">${l}</button>`).join('')}</div></div>
+    <div class="view" style="margin-top:28px">${body}</div>
+  </div></section>`;
+}
+function joinModal(id){
+  const e=evById(id), u=user();
+  if(!e||evPast(e)){toast('That session has already started','bad');return}
+  if(!u){afterAuth=()=>joinModal(id);openAuth('login',`Sign in to join “${e.title}”. Activities are charged to your room.`);return}
+  if(mySignup(e,u)){toast('You’re already on the list');return}
+  const stays=staysFor(u,e.date);
+  if(!stays.length){
+    openModal(e.title,`<p>Activities are for guests staying with us on <b>${fmt(e.date)}</b>, and the charge goes on that room's folio. You don't have a stay covering that date yet.</p>
+      <div class="bk-foot"><button class="btn btn-ghost" data-act="close">Not now</button><button class="btn btn-primary" data-act="book-for" data-day="${e.date}">Book a stay for ${fmtShort(e.date)}</button></div>`);return;
+  }
+  const left=e.cap-spotsTaken(e.id), solo=u.solo||{on:true,intro:''};
+  openModal(e.title,`<div class="quote"><div class="ql"><span>${fmt(e.date,{weekday:'long',month:'long',day:'numeric'})}</span><b>${t12(e.time)} · ${e.dur}</b></div><div class="ql muted"><span>${esc(e.where)}</span><span>${left} spots left</span></div></div>
+    <form data-form="join" data-ev="${e.id}" style="display:flex;flex-direction:column;gap:14px">
+      <label class="field">Charge to stay<select id="j-res" name="res">${stays.map(r=>`<option value="${r.id}">${r.id} · ${TYPES[r.type].short} ${r.roomNo} · ${fmtShort(r.checkIn)}–${fmtShort(r.checkOut)}</option>`).join('')}</select></label>
+      ${e.party?`<label class="field">Number of people<select id="j-party" name="party">${[1,2,3,4].filter(n=>n<=left).map(n=>`<option>${n}</option>`).join('')}</select></label>`:''}
+      ${e.kind==='solo'?`<label class="check"><input type="checkbox" id="j-solo" name="solo" ${solo.on?'checked':''}> Show my first name to the group</label>
+        <label class="field">One line about you (optional)<input id="j-intro" name="intro" maxlength="60" placeholder="e.g. From Iloilo, here for the coffee" value="${esc(solo.intro||'')}"></label>`:''}
+      <div class="ql tot"><span>Charged to your folio</span><span class="num" id="j-price">${peso(priceFor(e,stays[0],1))}</span></div>
+      ${e.kind==='yoga'&&stays.some(r=>r.type==='vip')?'<p class="muted" style="font-size:.85rem">Free when charged to a VIP Suite stay.</p>':''}
+      <div class="err" id="j-err"></div>
+      <button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">${e.kind==='solo'?'Join the group':'Confirm my spot'}</button>
+    </form>`);
+}
+function joinPrice(){const f=document.querySelector('form[data-form=join]');if(!f)return;const e=evById(f.dataset.ev),r=R(f.res.value),p=+(f.party?.value||1);$('#j-price').textContent=peso(priceFor(e,r,p))}
+function leaveSignup(s,{staff=false}={}){
+  const e=evById(s.eventId)||s.snap;
+  confirmBox(staff?`Remove ${firstName(s.name)} from this activity?`:'Leave this activity?',`${esc(e.title)}, ${fmt(e.date,{weekday:'short',month:'short',day:'numeric'})} at ${t12(e.time)}. The ${peso(s.amt||0)} charge comes off the room folio.`,staff?'Remove guest':'Leave activity',()=>{
+    s.status='cancelled'; const r=R(s.resId); if(r){r.extras=(r.extras||[]).filter(x=>x.ref!==s.id);r.history.push({at:TODAY,what:`Activity cancelled: ${e.title}`})}
+    save(); closeModal(); route(); toast(staff?'Guest removed':'You’ve left the activity');
+  });
+}
+function aActs(){
+  const ev=allEvents().filter(e=>e.date<=addDays(TODAY,6));
+  const withPeople=ev.filter(e=>going(e.id).length);
+  return `<p class="muted" style="margin-bottom:14px">Rosters for the next 7 days. Charges post to each guest's room folio automatically.</p>
+  <div class="tw"><table class="t"><thead><tr><th>Activity</th><th>When</th><th class="r">Booked</th><th>Guests</th></tr></thead><tbody>
+  ${withPeople.length?withPeople.map(e=>`<tr><td><b>${e.title}</b><div class="muted" style="font-size:.8rem">${{solo:'Solo Circle',yoga:'Yoga',capy:'Capybaras · '+PARTNER}[e.kind]}</div></td><td>${fmt(e.date,{weekday:'short',month:'short',day:'numeric'})}, ${t12(e.time)}</td><td class="r num">${spotsTaken(e.id)} / ${e.cap}</td><td><div class="who-list">${going(e.id).map(s=>{const r=R(s.resId);return `<span class="chipp">${esc(s.name)}${r?` · <span class="mono">${r.roomNo}</span>`:''}${(s.party||1)>1?` ×${s.party}`:''} <button class="xbtn" data-act="staff-leave" data-sid="${s.id}" aria-label="Remove ${esc(s.name)}">×</button></span>`}).join('')}</div></td></tr>`).join(''):'<tr><td colspan="4" class="muted" style="text-align:center;padding:28px">No sign-ups in the next 7 days.</td></tr>'}
+  </tbody></table></div>`;
+}
+function seedSignups(){
+  const mk=(eventId,uid,resId,extra={})=>{const u=db.users.find(x=>x.id===uid),e=evById(eventId),r=R(resId);if(!e||!u)return;const party=extra.party||1,amt=priceFor(e,r,party);
+    const s={id:rid('S',6),eventId,userId:uid,resId,name:u.name,party,solo:!!extra.intro||extra.solo,intro:extra.intro||'',status:'going',amt,at:TODAY,snap:{title:e.title,date:e.date,time:e.time}};
+    db.signups.push(s); if(r&&amt){r.extras=r.extras||[];r.extras.push({id:rid('X',6),kind:'activity',ref:s.id,label:`${e.title}, ${fmtShort(e.date)} ${t12(e.time)}`,amt})}};
+  const d=n=>addDays(TODAY,n), sid=(k,n)=>`${k}-${d(n)}`;
+  mk(sid('boat',1),'u2','ALM-3HXP8',{intro:'First time in Tagaytay, I bring a camera'});
+  mk(sid('bulalo',0),'u3','ALM-9MBT4',{intro:'From Iloilo, here for the food'});
+  mk(sid('bulalo',0),'u4','ALM-7PEXR',{intro:'Nurse on a long-overdue break'});
+  mk(sid('coffee',2),'u2','ALM-3HXP8',{intro:'First time in Tagaytay, I bring a camera'});
+  mk(sid('hike',3),'u4','ALM-5RWNE',{intro:'Trail runner, slow walker today'});
+  mk(`yoga-${d(1)}-06:30`,'u1','ALM-7Q2KD');
+  mk(`yoga-${d(0)}-17:00`,'u2','ALM-3HXP8');
+  mk(`capy-${d(1)}-10:00`,'u4','ALM-7PEXR',{party:3});
+  mk(`capy-${d(2)}-15:00`,'u2','ALM-3HXP8',{party:2});
+}
+
+/* ====== Router, page transitions, scroll effects ====== */
+const reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+let io=null, dotIO=null;
+function route(){
+  const v=(location.hash.slice(1)||'home'); ui.view=['home','rooms','deck','experiences','bookings','staff'].includes(v)?v:'home';
+  const html={home:vHome,rooms:vRooms,deck:vDeck,experiences:vExp,bookings:vBookings,staff:vStaff}[ui.view]();
+  const m=$('#main'); m.innerHTML=`<div class="view">${html}</div>`;
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===ui.view));
+  $('#nav').classList.remove('open'); renderAcct(); initScrollFx();
+}
+function initScrollFx(){
+  io&&io.disconnect(); dotIO&&dotIO.disconnect();
+  const els=document.querySelectorAll('#main .rv');
+  if(reduce||!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'))}
+  else{io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -6% 0px'});els.forEach(e=>io.observe(e))}
+  const chaps=[...document.querySelectorAll('#main .chap[data-chap]')], dots=$('#dots');
+  if(dots&&chaps.length>1){
+    dots.innerHTML=chaps.map(c=>`<button data-act="chap" data-id="${c.id}" aria-label="${esc(c.dataset.chap)}"><span>${esc(c.dataset.chap)}</span></button>`).join('');
+    if('IntersectionObserver' in window){dotIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)dots.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});chaps.forEach(c=>dotIO.observe(c))}
+  }
+  onScroll();
+}
+let ticking=false;
+function onScroll(){
+  if(ticking) return; ticking=true;
+  requestAnimationFrame(()=>{
+    const h=document.documentElement, max=h.scrollHeight-h.clientHeight, y=h.scrollTop;
+    $('#prog').style.transform=`scaleX(${max>0?y/max:0})`;
+    if(!reduce){const hp=document.querySelector('#main .hero .hero-ph');if(hp&&y<innerHeight*1.2)hp.style.transform=`translateY(${y*0.28}px)`}
+    ticking=false;
+  });
+}
+addEventListener('scroll',onScroll,{passive:true});
+function pageTransition(fn){
+  const c=$('#curtain');
+  if(reduce){fn();return}
+  c.classList.remove('out');c.classList.add('in');
+  setTimeout(()=>{fn();window.scrollTo(0,0);c.classList.remove('in');c.classList.add('out');
+    setTimeout(()=>{c.style.transition='none';c.classList.remove('out');void c.offsetWidth;c.style.transition=''},650)},560);
+}
+function go(v){if(location.hash==='#'+v){pageTransition(route)}else location.hash=v}
+addEventListener('hashchange',()=>pageTransition(route));
+
+/* ====== Events ====== */
+const R=id=>db.res.find(r=>r.id===id);
+const ACT={
+  menu:()=>$('#nav').classList.toggle('open'),
+  chap:a=>{const el=document.getElementById(a.dataset.id);el&&el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})},
+  lightbox:a=>lightbox(a.dataset.i),
+  bktab:a=>{ui.bkTab=a.dataset.tab;route()},
+  close:closeModal,
+  go:a=>go(a.dataset.to),
+  auth:a=>{afterAuth=null;openAuth(a.dataset.mode||'login')},
+  'auth-tab':a=>openAuth(a.dataset.mode,'',{},true),
+  submit:a=>{const f=a.closest('form');if(!f||!FORM[f.dataset.form])return;if(f.reportValidity&&!f.reportValidity())return;FORM[f.dataset.form](f)},
+  'bk-early':a=>{bk.early=a.dataset.k;bkSide()},
+  early:a=>earlyModal(R(a.dataset.id)),
+  'ec-pick':a=>{const b=$('#ec-save');b.dataset.k=a.dataset.k;a.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===a))},
+  'ec-save':a=>{const r=R(a.dataset.id),k=a.dataset.k;if(k&&!earlyOk(r.roomNo,r.checkIn,r.id)){toast('That room isn’t free the morning of arrival','bad');return}setEarly(r,k);r.history.push({at:TODAY,what:k?`Early check-in set to ${EARLY.find(e=>e.k===k).t}`:'Early check-in removed'});save();closeModal();route();toast(k?`Early check-in at ${EARLY.find(e=>e.k===k).t} added`:'Early check-in removed')},
+  join:a=>joinModal(a.dataset.ev),
+  leave:a=>leaveSignup(db.signups.find(x=>x.id===a.dataset.sid)),
+  'staff-leave':a=>leaveSignup(db.signups.find(x=>x.id===a.dataset.sid),{staff:true}),
+  'exp-tab':a=>{ui.expTab=a.dataset.tab;if(ui.view!=='experiences'){go('experiences');return}route();const b=document.getElementById('x-body');b&&b.scrollIntoView({behavior:reduce?'auto':'smooth'})},
+  'exp-open':a=>{ui.expTab=a.dataset.tab;go('experiences')},
+  'exp-day':a=>{ui[a.dataset.kind==='yoga'?'yogaDay':'capyDay']=a.dataset.day;const y=scrollY;route();scrollTo(0,y)},
+  'book-for':a=>{search.ci=a.dataset.day;search.co=addDays(a.dataset.day,1);closeModal();openBooking({})},
+  'solo-prof':()=>{const u=user(),p=u.solo||{on:true,intro:''};openModal('Your Solo Circle card',`<form data-form="soloprof" style="display:flex;flex-direction:column;gap:14px"><label class="check"><input type="checkbox" id="sp-on" name="on" ${p.on?'checked':''}> Show my first name to fellow solo guests</label><label class="field">One line about you<input id="sp-intro" name="intro" maxlength="60" value="${esc(p.intro||'')}" placeholder="e.g. From Iloilo, here for the coffee"></label><p class="muted" style="font-size:.85rem">Only your first name and this line are shown, and only on activities you join. Contact details are never shared.</p><button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">Save card</button></form>`)},
+  car:a=>{const tr=a.closest('[data-car]').querySelector('.car-track'),w=tr.clientWidth||1,n=tr.children.length;slideTo(tr,((Math.round(tr.scrollLeft/w)+(+a.dataset.dir))%n+n)%n)},
+  'car-go':a=>{const tr=document.querySelector('.md .car-track');tr&&slideTo(tr,+a.dataset.i)},
+  logout:()=>{db.session.userId=null;save();renderAcct();route();toast('Signed out')},
+  'staff-out':()=>{db.session.staff=false;save();go('home')},
+  'room-detail':a=>roomDetail(a.dataset.type),
+  gal:a=>{$('#gal-main').innerHTML=pic(a.dataset.img,a.dataset.alt,'',1400);$('#gal-main .ph').style.aspectRatio='16/9';a.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===a))},
+  book:a=>openBooking({type:a.dataset.type,room:a.dataset.room}),
+  walkin:a=>openBooking({staff:true,type:a.dataset.type,room:a.dataset.room}),
+  ftype:a=>{search.type=a.dataset.type;document.querySelectorAll('#f-type button').forEach(b=>b.classList.toggle('on',b===a));$('#results').innerHTML=roomResults()},
+  'bk-type':a=>{bk.type=a.dataset.type;if(bk.guests>TYPES[bk.type].cap){bk.guests=TYPES[bk.type].cap;$('#bk-g').value=bk.guests}document.querySelectorAll('#bk-types button').forEach(b=>b.classList.toggle('on',b===a));bk.roomNo=null;bkSide()},
+  'bk-room':a=>{bk.roomNo=a.dataset.room;bkSide()},
+  'bk-next':()=>{const e=bkValidate();if(e){$('#bk-err').textContent=e;return}
+    if(bk.step===2&&!bk.staff&&!user()){afterAuth=()=>{bk.step=3;renderBk()};openAuth('register','Last step before payment: create an account (or sign in) so you can manage this booking later. Your stay details are kept.',{name:bk.name,email:bk.email,phone:bk.phone});return}
+    bk.step++;renderBk()},
+  'bk-resume':()=>{afterAuth=null;renderBk()},
+  'bk-back':()=>{bk.step--;renderBk()},
+  'bk-confirm':bkConfirm,
+  'done-bk':()=>{closeModal();go('bookings')},
+  receipt:a=>{const r=R(a.dataset.id);openModal('Receipt',receiptHTML(r)+`<div class="bk-foot"><button class="btn btn-ghost" data-act="close">Close</button><button class="btn btn-primary" data-act="copy-receipt" data-id="${r.id}">Copy receipt</button></div>`,{wide:true})},
+  'copy-receipt':a=>copyText(receiptText(R(a.dataset.id))),
+  modify:a=>modifyModal(R(a.dataset.id)),
+  'md-type':a=>{md.type=a.dataset.type;document.querySelectorAll('#m-types button').forEach(b=>b.classList.toggle('on',b===a));mdSum()},
+  'md-save':mdSave,
+  cancel:a=>cancelRes(R(a.dataset.id)),
+  pay:a=>payModal(R(a.dataset.id)),
+  profile:()=>profileModal(user()),
+  atab:a=>{ui.admTab=a.dataset.tab;route()},
+  res:(a,e)=>{e.preventDefault();resDetail(R(a.dataset.id))},
+  'room-card':a=>roomCard(a.dataset.room),
+  checkin:a=>{const r=R(a.dataset.id);r.status='checked-in';r.history.push({at:TODAY,what:`Checked in to ${r.roomNo}`});save();closeModal();route();toast(`${r.guest.name} checked in to ${r.roomNo}`)},
+  checkout:a=>{const r=R(a.dataset.id);if(balOf(r)>0){payModal(r,{checkout:true});return}doCheckout(r)},
+  'svc-off':a=>{const no=a.dataset.room;openModal(`Take ${no} out of service`,`<form data-form="oos" data-room="${no}" style="display:flex;flex-direction:column;gap:14px"><label class="field">Reason<input id="oos-r" name="reason" required placeholder="e.g. Aircon repair"></label><button class="btn btn-danger" type="button" data-act="submit" style="justify-content:center">Mark out of service</button></form>`)},
+  'svc-on':a=>{delete db.oos[a.dataset.room];save();closeModal();route();toast(`${a.dataset.room} is back in service`)},
+  'edit-guest':a=>{const g=guestList().find(x=>x.key===a.dataset.key);openModal('Edit guest',`<form data-form="guest" data-key="${esc(g.key)}" style="display:flex;flex-direction:column;gap:14px"><label class="field">Full name<input id="g-name" name="name" value="${esc(g.name)}" required></label><label class="field">Mobile number<input id="g-phone" name="phone" value="${esc(g.phone)}" required></label><label class="field">Email<input id="g-email" name="email" type="email" value="${esc(g.email)}" required></label><button class="btn btn-primary" type="button" data-act="submit" style="justify-content:center">Save guest</button></form>`)},
+  csv:()=>{const list=db.res.filter(r=>r.checkIn>=ui.repFrom&&r.checkIn<=ui.repTo);const rows=[['Reference','Guest','Email','Room','Type','Check-in','Check-out','Nights','Status','Total','Paid','Balance','Booked']].concat(list.map(r=>[r.id,r.guest.name,r.guest.email,r.roomNo,TYPES[r.type].short,r.checkIn,r.checkOut,nightsOf(r.checkIn,r.checkOut),r.status,r.total,paidOf(r),balOf(r),r.createdAt.slice(0,10)]));copyText(rows.map(r=>r.map(c=>/[",]/.test(c)?`"${String(c).replace(/"/g,'""')}"`:c).join(',')).join('\n'))},
+  reset:()=>confirmBox('Reset sample data?','All reservations, guests and payments in this browser go back to the original sample set.','Reset data',()=>{const st=db.session.staff;db=seed();db.session.staff=st;migrate();save();closeModal();route();toast('Sample data restored')}),
+};
+function doCheckout(r){r.status='checked-out';r.history.push({at:TODAY,what:`Checked out of ${r.roomNo}`});save();closeModal();route();toast(`${r.roomNo} is now available`)}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]'); if(a&&ACT[a.dataset.act]){ACT[a.dataset.act](a,e);return}
+  const n=e.target.closest('#nav a'); if(n){$('#nav').classList.remove('open')}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();
+  if(e.key==='Enter'&&e.target.matches('form[data-form] input:not([type=checkbox]):not([type=radio])')){e.preventDefault();const b=e.target.form.querySelector('[data-act=submit]');b&&b.click()}});
+function onField(e){
+  const t=e.target,v=t.value;
+  if(t.dataset.bk&&bk){const f=t.dataset.bk;bk[f]=f==='guests'?+v:v;
+    if(f==='ci'){if(nightsOf(bk.ci,bk.co)<1){bk.co=addDays(bk.ci,1);$('#bk-co').value=bk.co}$('#bk-co').min=addDays(bk.ci,1)}
+    if(['ci','co','guests','promo'].includes(f))bkSide();
+    if(f==='method'){$('#pm-fields').innerHTML=pmFields();$('#plan-wrap').hidden=v==='hotel'}
+    if(f==='plan')bkSide();
+    const er=$('#bk-err');if(er)er.textContent='';}
+  if(t.dataset.flt){const f=t.dataset.flt;search[f]=f==='guests'?+v:v;
+    if(f==='ci'&&nightsOf(search.ci,search.co)<1){search.co=addDays(search.ci,1);$('#f-co').value=search.co}
+    if(f==='ci')$('#f-co').min=addDays(search.ci,1);
+    $('#results').innerHTML=roomResults();$('#heat').innerHTML=heatTable()}
+  if(t.dataset.md&&md){const f=t.dataset.md;md[f]=f==='guests'?+v:v;if(f==='ci'&&nightsOf(md.ci,md.co)<1){md.co=addDays(md.ci,1);$('#m-co').value=md.co}mdSum()}
+  if(t.closest&&t.closest('form[data-form=join]'))joinPrice();
+  if(t.dataset.rq){ui[t.dataset.rq==='q'?'resQ':'resF']=v;$('#r-body').innerHTML=resBody()}
+  if(t.dataset.rp&&e.type==='change'){ui[t.dataset.rp]=v;$('#adm').innerHTML=aReports()}
+}
+document.addEventListener('input',onField);document.addEventListener('change',e=>{if(e.target.type==='radio'||e.target.tagName==='SELECT'||e.target.type==='date')onField(e)});
+
+const FORM={
+  search:f=>{const d=Object.fromEntries(new FormData(f));if(nightsOf(d.ci,d.co)<1){toast('Check-out must be after check-in','bad');return}Object.assign(search,{ci:d.ci,co:d.co,guests:+d.guests,type:d.type});go('rooms')},
+  login:f=>{const d=Object.fromEntries(new FormData(f)),u=db.users.find(x=>x.email.toLowerCase()===d.email.trim().toLowerCase());
+    if(!u||u.pw!==hash(d.pw)){$('#a-err').textContent='That email and password don’t match. Check both, or create an account.';return}
+    db.session.userId=u.id;save();toast(`Welcome back, ${u.name.split(' ')[0]}`);afterLogin()},
+  register:f=>{const d=Object.fromEntries(new FormData(f));
+    if(db.users.some(x=>x.email.toLowerCase()===d.email.trim().toLowerCase())){$('#a-err').textContent='An account with this email already exists. Sign in instead.';return}
+    if(d.phone.replace(/\D/g,'').length<10){$('#a-err').textContent='Enter a mobile number with at least 10 digits.';return}
+    const u={id:rid('u',6),name:d.name.trim(),email:d.email.trim(),phone:d.phone.trim(),pw:hash(d.pw),since:TODAY};db.users.push(u);db.session.userId=u.id;save();toast('Account created');afterLogin()},
+  staff:f=>{const d=Object.fromEntries(new FormData(f));if(d.id.trim().toLowerCase()==='frontdesk'&&d.pw==='allium2026'){db.session.staff=true;save();route();toast('Console unlocked')}else $('#st-err').textContent='Staff ID or password is incorrect.'},
+  pay:f=>{const d=Object.fromEntries(new FormData(f)),r=R(f.dataset.id),amt=Math.min(+d.amt,balOf(r));if(!(amt>0))return;
+    r.payments.push({amt,method:d.method,at:TODAY,ref:d.ref.trim()||rid('OR-',6)});r.history.push({at:TODAY,what:`Payment of ${peso(amt)} via ${METHODS[d.method]}`});save();
+    if(f.dataset.co&&balOf(r)===0){doCheckout(r)}else{closeModal();route();toast(`${peso(amt)} recorded`)}},
+  profile:f=>{const d=Object.fromEntries(new FormData(f)),u=user();
+    if(db.users.some(x=>x.id!==u.id&&x.email.toLowerCase()===d.email.trim().toLowerCase())){$('#pf-err').textContent='Another account already uses that email.';return}
+    Object.assign(u,{name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim()});db.res.filter(r=>r.userId===u.id&&active(r)).forEach(r=>r.guest={name:u.name,email:u.email,phone:u.phone});save();closeModal();route();toast('Details saved')},
+  guest:f=>{const d=Object.fromEntries(new FormData(f)),k=f.dataset.key,g={name:d.name.trim(),email:d.email.trim(),phone:d.phone.trim()};
+    if(k.startsWith('w:'))db.res.filter(r=>!r.userId&&r.guest.email.toLowerCase()===k.slice(2)).forEach(r=>r.guest={...g});
+    else{const u=db.users.find(x=>x.id===k);Object.assign(u,g);db.res.filter(r=>r.userId===k).forEach(r=>r.guest={...g})}
+    save();closeModal();route();toast('Guest updated')},
+  join:f=>{const e=evById(f.dataset.ev),u=user(),r=R(f.res.value),party=+(f.party?.value||1);
+    if(!e||evPast(e)){$('#j-err').textContent='This session has already started.';return}
+    if(e.cap-spotsTaken(e.id)<party){$('#j-err').textContent='Not enough spots left. Choose fewer people.';return}
+    const solo=f.solo?f.solo.checked:false,intro=(f.intro?.value||'').trim();
+    if(e.kind==='solo'){u.solo={on:solo,intro}}
+    const amt=priceFor(e,r,party),sg={id:rid('S',6),eventId:e.id,userId:u.id,resId:r.id,name:u.name,party,solo:e.kind==='solo'&&solo,intro:e.kind==='solo'&&solo?intro:'',status:'going',amt,at:TODAY,snap:{title:e.title,date:e.date,time:e.time}};
+    db.signups.push(sg); if(amt){r.extras=r.extras||[];r.extras.push({id:rid('X',6),kind:'activity',ref:sg.id,label:`${e.title}, ${fmtShort(e.date)} ${t12(e.time)}`,amt})}
+    r.history.push({at:TODAY,what:`Joined ${e.title} (${fmtShort(e.date)} ${t12(e.time)})`});save();closeModal();route();toast(amt?`You’re in. ${peso(amt)} added to ${r.id}`:'You’re in. No charge on your VIP stay')},
+  soloprof:f=>{user().solo={on:f.on.checked,intro:f.intro.value.trim()};save();closeModal();route();toast('Solo Circle card saved')},
+  oos:f=>{db.oos[f.dataset.room]=new FormData(f).get('reason').trim();save();closeModal();route();toast(`${f.dataset.room} marked out of service`)},
+};
+document.addEventListener('submit',e=>{const f=e.target;if(f.dataset.form&&FORM[f.dataset.form]){e.preventDefault();FORM[f.dataset.form](f)}});
+
+/* ====== Boot ====== */
+$('#brand').innerHTML=wordmark();$('#fbrand').innerHTML=wordmark();$('#ld-logo').innerHTML=logo(96);
+$('#cw').innerHTML=logo(64)+'<span>ALLIUM</span>';
+function migrate(){if(db.v===2)return;db.signups=db.signups||[];db.res.forEach(r=>r.extras=r.extras||[]);if(db.sample&&!db.signups.length)seedSignups();db.v=2;save()}
+migrate();
+route();
+setTimeout(()=>{$('#loader').classList.add('done');setTimeout(()=>$('#loader')?.remove(),800)},reduce?300:2000);
+</script>
+</body>
+</html>
